@@ -1,27 +1,28 @@
 # BabyMonitor
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.0-next.0.
 
-## Development server
+## Steps in automation of data to github pages
+1. Postman(newman) command line run collection to get csv data
+    * `newman run mycollection.json --reporters cli,json --reporter-json-export outputfile.json`
+    * save file into git repo
+1. git push new file data
+1. build application around data
+   * 
+  
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Streth Goals
+1. Display data graphically
+1. Use Tensor flow to play with machine learning
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### working with Newman
+Install: `npm install -g newman`
 
-## Running unit tests
+`newman run BabyConnect.postman_collection.json --environment BabyConnectRunnerEnv.postman_environment.json --reporters json --reporter-cli-no-summary	--reporter-cli-no-failures --reporter-cli-no-assertions --reporter-cli-no-success-assertions --reporter-cli-no-banner`
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+`newman run BabyConnect.postman_collection.json --environment BabyConnectRunnerEnv.postman_environment.json --reporter-cli-no-summary	--reporter-cli-no-failures --reporter-cli-no-assertions --reporter-cli-no-success-assertions --reporter-cli-no-banner`
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
