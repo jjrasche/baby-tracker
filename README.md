@@ -3,14 +3,15 @@
 
 ## Steps in automation of data to github pages
 1. Postman(newman) command line run collection to get csv data
-    * `newman run mycollection.json --reporters cli,json --reporter-json-export outputfile.json`
+    * `newman run BabyConnect.postman_collection.json -e BabyConnectRunnerEnv.postman_environment.json --export-environment data.json --reporters cli,json --reporter-json-export outputfile.json`
     * save file into git repo
 1. git push new file data
 1. build application around data
-   * 
+   * CSVParserService
+   * EntryService
+   * Create methods that slice up data
   
-
-## Streth Goals
+## Stretch Goals
 1. Display data graphically
 1. Use Tensor flow to play with machine learning
 
