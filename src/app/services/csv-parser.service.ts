@@ -1,16 +1,14 @@
 import { Injectable, Type } from "@angular/core";
-import { Event } from "@models/event";
+import { Entry } from "@models/entry";
 
-/**
- * Assumptions:
- *  - class variables and headers are in the same order
- */
+
 @Injectable({
   providedIn: "root"
 })
 export class CsvParserService {
-  private lineDeliminator = "\n";
   private columnDeliminator = ",";
+  private csvSplit = new RegExp(`(?:^|${this.columnDeliminator})(\\"(?:[^\\"]+|\\"\\")*\\"|[^${this.columnDeliminator}]*)`);
+  private lineDeliminator = "\n";
   private emptyCellOutput = null;
   private invalidDate = new Date("not a date").toString();
   private invalidNumber = parseInt("not a number", 10).toString();
@@ -18,15 +16,16 @@ export class CsvParserService {
   private numberType = "number";
   private stringType = "string";
 
-  // "Error Parsing Row: Row 4 only has 2 columns 3 were expected";
-
-  ParseData(csvString: string): Event[] {
-    const dataArray: Event[] = [];
+  ParseData(csvString: string): Entry[] {
+    const dataArray: Entry[] = [];
     const lines = csvString.split(this.lineDeliminator);
-    const headers = lines.shift().split(this.columnDeliminator);
+    const headers = this.splitLine(lines.shift());
     lines.forEach((line, idx) => {
       const row = idx + 1;
-      const columns = line.split(this.columnDeliminator);
+      const columns = this.splitLine(line);
+      if (columns.length === 0) {
+        return;
+      }
       if (columns.length !== headers.length) {
         throw new Error(`Error Parsing Row(${row}): has ${columns.length} columns ${headers.length} were expected`);
       }
@@ -41,10 +40,14 @@ export class CsvParserService {
         notes: this.Convert(columns[7], this.stringType, "notes", row),
         caregiver: this.Convert(columns[8], this.stringType, "caregiver", row),
         childName: this.Convert(columns[9], this.stringType, "childName", row),
-      } as Event;
+      } as Entry;
       dataArray.push(event);
     });
     return dataArray;
+  }
+
+  private splitLine(line: string): string[] {
+    return line.split(this.csvSplit).filter((ele, idx) => idx % 2 === 1);
   }
 
   private Convert(value: string, type: string, columnName: string, row: number): any {
@@ -58,7 +61,7 @@ export class CsvParserService {
     } else if (type === this.numberType) {
       ret = parseInt(value, 10);
     } else {
-      ret = value;
+      ret = value.replace(/"/g, "").replace(/'/g, "");
     }
     // conversion checks
     if ([this.invalidDate, this.invalidNumber].find(str => str === ret.toString())) {

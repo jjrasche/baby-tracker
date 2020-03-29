@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 
 import { CsvParserService } from "./csv-parser.service";
-import { Event } from "@models/event";
+import { Entry } from "@models/entry";
 
 // tslint:disable:max-line-length
 
@@ -19,6 +19,7 @@ const babyCsvData = `Start Time,End Time,Activity,Duration (min),Quantity,Extra 
 
 const testCsvDataHeader = `Start Time,End Time,Activity,Duration (min),Quantity,Extra data,Text,Notes,Caregiver,Child Name`;
 const validTestDataRow1 = `2019-10-31 20:26,2019-10-31 20:56,"Bottle",21,90.0,"Formula","Charlie drank 90 ml of formula (21m)",,"Karen","Charlie"`;
+const Row1WithCommaString = `2019-10-31 20:26,2019-10-31 20:56,"Bot,tle",21,90.0,"Formula","Charlie drank 90 ml of formula (21m)",,"Karen","Charlie"`;
 const validTestDataRow2 = `2019-10-31 20:42,2019-10-31 20:42,"Diaper",,,"Wet","Charlie had a wet diaper (medium)",,"Karen","Charlie"`;
 const rowMissingColumn = `2019-10-31 19:10,2019-10-31 19:10,"Diaper",,,"Wet",`;
 const invalidNumberTestDataColumn = `2019-10-31 18:30,2019-10-31 18:50,"Bottle",supposedToBeANumber,30.0,"Formula","Charlie drank 30 ml of formula (20m)",,"Karen","Charlie"`;
@@ -27,26 +28,26 @@ const invalidDateTestDataColumn = `supposedToBeADate,2019-10-31 18:02,"Nursing",
 const row1Object = {
   startTime: new Date("2019-10-31 20:26"),
   endTime: new Date("2019-10-31 20:56"),
-  activity: `"Bottle"`,
+  activity: `Bottle`,
   duration: 21,
   quantity: 90.0,
-  extraData: `"Formula"`,
-  text: `"Charlie drank 90 ml of formula (21m)"`,
+  extraData: `Formula`,
+  text: `Charlie drank 90 ml of formula (21m)`,
   notes: null,
-  caregiver: `"Karen"`,
-  childName: `"Charlie"`,
-} as Event;
-const row2Object: Event = {
+  caregiver: `Karen`,
+  childName: `Charlie`,
+} as Entry;
+const row2Object: Entry = {
   startTime: new Date("2019-10-31 20:42"),
   endTime: new Date("2019-10-31 20:42"),
-  activity: `"Diaper"`,
+  activity: `Diaper`,
   duration: null,
   quantity: null,
-  extraData: `"Wet"`,
-  text: `"Charlie had a wet diaper (medium)"`,
+  extraData: `Wet`,
+  text: `Charlie had a wet diaper (medium)`,
   notes: null,
-  caregiver: `"Karen"`,
-  childName: `"Charlie"`,
+  caregiver: `Karen`,
+  childName: `Charlie`,
 };
 
 describe("CsvParserService", () => {
@@ -62,6 +63,18 @@ describe("CsvParserService", () => {
     const data = [testCsvDataHeader, ...nonHederRows].join("\n");
     const actual = service.ParseData(data);
     expect(actual).toEqual([row1Object, row2Object]);
+  });
+  it("skip empty lines", () => {
+    const data = [testCsvDataHeader, "", validTestDataRow1].join("\n");
+    const actual = service.ParseData(data);
+    expect(actual).toEqual([row1Object]);
+  });
+  it("handles commas in strings", () => {
+    const data = [testCsvDataHeader, Row1WithCommaString].join("\n");
+    const actual = service.ParseData(data);
+    const expected = {...row1Object};
+    expected.activity = "Bot,tle";
+    expect(actual).toEqual([expected]);
   });
   it("parsing throws error when cell Date data can't be formatted into model", () => {
     const data = [testCsvDataHeader, validTestDataRow1, invalidDateTestDataColumn].join("\n");
