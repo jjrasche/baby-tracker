@@ -1,6 +1,8 @@
 import { TestBed } from "@angular/core/testing";
 
 import { CsvParserService } from "./csv-parser.service";
+import { Event } from "@models/event";
+
 // tslint:disable:max-line-length
 
 const babyCsvData = `Start Time,End Time,Activity,Duration (min),Quantity,Extra data,Text,Notes,Caregiver,Child Name
@@ -19,63 +21,62 @@ const testCsvDataHeader = `Start Time,End Time,Activity,Duration (min),Quantity,
 const validTestDataRow1 = `2019-10-31 20:26,2019-10-31 20:56,"Bottle",21,90.0,"Formula","Charlie drank 90 ml of formula (21m)",,"Karen","Charlie"`;
 const validTestDataRow2 = `2019-10-31 20:42,2019-10-31 20:42,"Diaper",,,"Wet","Charlie had a wet diaper (medium)",,"Karen","Charlie"`;
 const rowMissingColumn = `2019-10-31 19:10,2019-10-31 19:10,"Diaper",,,"Wet",`;
-const invalidDateTestDataColumn = `2019-10-31 18:30,2019-10-31 18:50,"Bottle",supposedToBeANumber,30.0,"Formula","Charlie drank 30 ml of formula (20m)",,"Karen","Charlie"`;
-const invalidNumberTestDataColumn = `supposedToBeADate,2019-10-31 18:02,"Nursing",9,,,"Charlie nursed (9m left)",,"Justine","Charlie"`;
+const invalidNumberTestDataColumn = `2019-10-31 18:30,2019-10-31 18:50,"Bottle",supposedToBeANumber,30.0,"Formula","Charlie drank 30 ml of formula (20m)",,"Karen","Charlie"`;
+const invalidDateTestDataColumn = `supposedToBeADate,2019-10-31 18:02,"Nursing",9,,,"Charlie nursed (9m left)",,"Justine","Charlie"`;
+
+const row1Object = {
+  startTime: new Date("2019-10-31 20:26"),
+  endTime: new Date("2019-10-31 20:56"),
+  activity: `"Bottle"`,
+  duration: 21,
+  quantity: 90.0,
+  extraData: `"Formula"`,
+  text: `"Charlie drank 90 ml of formula (21m)"`,
+  notes: null,
+  caregiver: `"Karen"`,
+  childName: `"Charlie"`,
+} as Event;
+const row2Object: Event = {
+  startTime: new Date("2019-10-31 20:42"),
+  endTime: new Date("2019-10-31 20:42"),
+  activity: `"Diaper"`,
+  duration: null,
+  quantity: null,
+  extraData: `"Wet"`,
+  text: `"Charlie had a wet diaper (medium)"`,
+  notes: null,
+  caregiver: `"Karen"`,
+  childName: `"Charlie"`,
+};
 
 describe("CsvParserService", () => {
   let service: CsvParserService;
 
   beforeEach(() => {
-    // TestBed.configureTestingModule({});
-    // service = TestBed.get(CsvParserService);
     const testBed = TestBed.configureTestingModule({});
     service = testBed.get(CsvParserService);
   });
 
-  fit("parsing works on test data", () => {
-    const nonHederRows = [validTestDataRow1, validTestDataRow2];
-    const data = [testCsvDataHeader, ...nonHederRows].join("\n");
-    const actual = service.ParseData(data);
-    const expected = nonHederRows.map(row => convertStringToTestData(row));
-    expect(actual).toEqual(expected);
-  });
   it("parsing works on test data", () => {
     const nonHederRows = [validTestDataRow1, validTestDataRow2];
     const data = [testCsvDataHeader, ...nonHederRows].join("\n");
     const actual = service.ParseData(data);
-    const expected = nonHederRows.map(row => convertStringToTestData(row));
-    expect(actual).toEqual(expected);
+    expect(actual).toEqual([row1Object, row2Object]);
   });
   it("parsing throws error when cell Date data can't be formatted into model", () => {
     const data = [testCsvDataHeader, validTestDataRow1, invalidDateTestDataColumn].join("\n");
-    const failingCellValue = invalidDateTestDataColumn.split(",")[1];
+    const failingCellValue = invalidDateTestDataColumn.split(",")[0];
     expect(() => service.ParseData(data)).toThrowError(
-      `Error Parsing Cell: Row: 3, column:"time" can't convert "${failingCellValue}" to date`);
+      `Error Parsing Cell: Row(2), column(startTime) can't convert "${failingCellValue}" to date`);
   });
   it("parsing throws error when cell number data can't be formatted into model", () => {
     const data = [testCsvDataHeader, validTestDataRow2, invalidNumberTestDataColumn].join("\n");
-    const failingCellValue = invalidNumberTestDataColumn.split(",")[0];
+    const failingCellValue = invalidNumberTestDataColumn.split(",")[3];
     expect(() => service.ParseData(data)).toThrowError(
-      `Error Parsing Cell: Row: 3, column:"num" can't convert "${failingCellValue}" to number`);
+      `Error Parsing Cell: Row(2), column(duration) can't convert "${failingCellValue}" to number`);
   });
   it("parsing throws error when row length doesn't match header length", () => {
     const data = [testCsvDataHeader, validTestDataRow1, validTestDataRow2, rowMissingColumn].join("\n");
-    expect(() => service.ParseData(data)).toThrowError("Error Parsing Row: Row 4 only has 2 columns where 3 expected");
+    expect(() => service.ParseData(data)).toThrowError("Error Parsing Row(3): has 7 columns 10 were expected");
   });
-
-  const convertStringToTestData = (str: string): Event => {
-    const columns = str.split(",");
-    return {
-      startTime: new Date(columns[0]),
-      endTime: new Date(columns[1]),
-      activity: columns[2],
-      duration: parseInt(columns[3], 10),
-      quantity: parseInt(columns[4], 10),
-      extraData: columns[5],
-      text: columns[6],
-      notes: columns[7],
-      caregiver: columns[8],
-      childName: columns[9]
-    } as unknown as Event;
-  };
 });
