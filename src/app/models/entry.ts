@@ -22,4 +22,14 @@ export class Entry {
     this.caregiver = entry.caregiver;
     this.childName = entry.childName;
   }
+
+  get entryDate(): Date {
+    const tempDate = new Date(this.startTime);
+    tempDate.setHours(0, 0, 0, 0);
+    return tempDate;
+  }
+
+  get minutes(): number {
+    return (this.startTime.getHours() * 60) + this.startTime.getMinutes();
+  }
 }

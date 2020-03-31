@@ -1,3 +1,7 @@
-<ng-container *ngIf="entryService.sleep | async as sleep">
-  {{sleep.length}}
+<ng-container *ngIf="entryService.numNapsPerDay | async as napsPerDay">
+  {{napsPerDay.length}}
+  <div *ngFor="let day of napsPerDay">
+    {{ day.day | date:"shortDate"}} - {{ day.num }}
+  </div>
 </ng-container>
+

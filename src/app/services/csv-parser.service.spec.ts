@@ -37,7 +37,7 @@ const row1Object = {
   caregiver: `Karen`,
   childName: `Charlie`,
 } as Entry;
-const row2Object: Entry = {
+const row2Object = {
   startTime: new Date("2019-10-31 20:42"),
   endTime: new Date("2019-10-31 20:42"),
   activity: `Diaper`,
@@ -48,7 +48,7 @@ const row2Object: Entry = {
   notes: null,
   caregiver: `Karen`,
   childName: `Charlie`,
-};
+} as Entry;
 
 describe("CsvParserService", () => {
   let service: CsvParserService;
@@ -72,7 +72,7 @@ describe("CsvParserService", () => {
   it("handles commas in strings", () => {
     const data = [testCsvDataHeader, Row1WithCommaString].join("\n");
     const actual = service.ParseData(data);
-    const expected = {...row1Object};
+    const expected = {...row1Object} as Entry;
     expected.activity = "Bot,tle";
     expect(actual).toEqual([expected]);
   });
