@@ -12,6 +12,7 @@ import { Entry } from "@models/entry";
 })
 export class AppComponent {
   public title: string;
+  public chartData: any;
 
   constructor(
     public entryService: EntryService,
@@ -22,6 +23,14 @@ export class AppComponent {
         const data: Entry[] = parserService.ParseData(csvString);
         entryService.addEntries(data);
       });
+
+      this.chartData = {
+        chartType: "ColumnChart",
+        dataTable: [["", "Germany", "USA", "Brazil", "Canada", "France", "RU"],
+                    ["", 700, 300, 400, 500, 600, 800]],
+        options: {title: "Countries"},
+        containerId: "vis_div"
+      };
   }
 
 }

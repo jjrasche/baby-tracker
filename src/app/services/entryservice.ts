@@ -6,6 +6,7 @@ import { Entry } from "@models/entry";
 
 class NapGraphData {
   day: Date;
+  child: string;
   num: number;
 }
 
@@ -40,27 +41,33 @@ export class EntryService {
       map((sleepEntries: SleepEntry[]) => {
         const groupMap = sleepEntries
           .filter(e => e.sleepType === "nap")
-          .groupBy(e => `${e.entryDate.toString()}`);
-
-        // const groupedSleeps = Object.keys(groupMap).map(key => groupMap[key]);
-        // const napsPerDay: NapGraphData[] = [];
-        // groupedSleeps.forEach((sleepGroup: SleepEntry[]) => {
-        //       napsPerDay.push({
-        //         day: sleepGroup[0].EntryDate,
-        //         num: sleepGroup.length
-        //       } as NapGraphData);
-        //     });
-        // return napsPerDay;
-
+          .groupBy(e => `${e.entryDate.toString()}-${e.childName}`);
         const napsPerDay = Object.keys(groupMap)
           .map(key => groupMap[key])
           .map((napsForDay: SleepEntry[]) => {
             return {
               day: napsForDay[0].entryDate,
+              child: napsForDay[0].childName,
               num: napsForDay.length
             } as NapGraphData;
           });
         return napsPerDay;
+      })
+    );
+  }
+
+  get numNapsPerDayChartData(): Observable<any> {
+    return this.numNapsPerDay.pipe(
+      map((napData: NapGraphData[]) => {
+        const daysData = napData.map(nd => nd.day);
+        const numNapsData = napData.map(nd => nd.num);
+        return {
+          chartType: "ColumnChart",
+          dataTable: [["", ...napData.map(nd => nd.day)],
+                      ["", ...napData.map(nd => nd.num)]],
+          options: {title: "Countries"},
+          containerId: "vis_div"
+        };
       })
     );
   }

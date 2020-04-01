@@ -1,7 +1,9 @@
 <ng-container *ngIf="entryService.numNapsPerDay | async as napsPerDay">
   {{napsPerDay.length}}
   <div *ngFor="let day of napsPerDay">
-    {{ day.day | date:"shortDate"}} - {{ day.num }}
+    {{ day.day | date:"shortDate"}} - {{ day.num }} - {{ day.child }}
   </div>
 </ng-container>
 
+
+<raw-chart [chartData]="entryService.numNapsPerDayChartData | async" style="width:600px;height:400px;"></raw-chart>
