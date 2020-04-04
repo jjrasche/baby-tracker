@@ -1,9 +1,15 @@
-<ng-container *ngIf="entryService.numNapsPerDay | async as napsPerDay">
+<!-- <ng-container *ngIf="entryService.numNapsPerDay | async as napsPerDay">
   {{napsPerDay.length}}
   <div *ngFor="let day of napsPerDay">
     {{ day.day | date:"shortDate"}} - {{ day.num }} - {{ day.child }}
   </div>
-</ng-container>
+</ng-container> -->
+
+<select id="graphSelect" [(ngModel)]="selectedChart">
+  <option #chartData *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.name }} </option>
+</select>
+
+"{{selectedChart?.name}}"
 
 
-<raw-chart [chartData]="entryService.numNapsPerDayChartData | async" style="width:600px;height:400px;"></raw-chart>
+<raw-chart *ngIf="selectedChart" [chartData]="selectedChart?.chartData | async" style="width:600px;height:400px;"></raw-chart>

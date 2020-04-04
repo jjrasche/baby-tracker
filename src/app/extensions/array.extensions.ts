@@ -1,11 +1,5 @@
 export { }; // this will make it module
 
-// declare global { // this is important to access it as global type String
-//   interface Array<T> {
-//     groupBy<T>(getGroupValue: (a: T) => any): {[key: string]: T[]};
-//   }
-// }
-
 declare global {
   interface Array<T> {
     groupBy(getGroupValue: (a: T) => any): {[key: string]: T[]};

@@ -36,6 +36,22 @@ export class EntryService {
     );
   }
 
+  get numNapsPerDayChartData(): Observable<google.visualization.ChartSpecs> {
+    return this.numNapsPerDay.pipe(
+      map((napData: NapGraphData[]) =>
+        this.createColumnChartData(napData.map(nd => nd.day), napData.map(nd => nd.num)))
+    );
+  }
+
+  numNapsPerDayByChildChartData(childName: string): Observable<google.visualization.ChartSpecs> {
+    return this.numNapsPerDay.pipe(
+      map((napData: NapGraphData[]) => {
+        const childData = napData.filter(n => n.child === childName);
+        return this.createColumnChartData(childData.map(nd => nd.day), childData.map(nd => nd.num));
+      })
+    );
+  }
+
   get numNapsPerDay(): Observable<NapGraphData[]> {
     return this.sleep.pipe(
       map((sleepEntries: SleepEntry[]) => {
@@ -56,19 +72,12 @@ export class EntryService {
     );
   }
 
-  get numNapsPerDayChartData(): Observable<any> {
-    return this.numNapsPerDay.pipe(
-      map((napData: NapGraphData[]) => {
-        const daysData = napData.map(nd => nd.day);
-        const numNapsData = napData.map(nd => nd.num);
-        return {
-          chartType: "ColumnChart",
-          dataTable: [["", ...napData.map(nd => nd.day)],
-                      ["", ...napData.map(nd => nd.num)]],
-          options: {title: "Countries"},
-          containerId: "vis_div"
-        };
-      })
-    );
+  private createColumnChartData(xaxis: any[], data: any[], title: string = "column chart"): google.visualization.ChartSpecs {
+    return {
+      chartType: "ColumnChart",
+      dataTable: [["", ...xaxis],
+                  ["", ...data]],
+      options: {title},
+    };
   }
 }

@@ -59,7 +59,7 @@ export class CsvParserService {
     if (type === this.dateType) {
       ret = new Date(value);
     } else if (type === this.numberType) {
-      ret = parseInt(value, 10);
+      ret = parseFloat(value);
     } else {
       ret = value.replace(/"/g, "").replace(/'/g, "");
     }
