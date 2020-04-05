@@ -9,6 +9,7 @@ import { GoogleChartsModule } from "angular-google-charts";
 
 import "./extensions/string.extensions";
 import "./extensions/array.extensions";
+import "./extensions/date.extensions";
 
 @NgModule({
   declarations: [
