@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { SleepEntry } from "@models/sleep";
 import { Entry } from "@models/entry";
@@ -38,30 +38,53 @@ export class EntryService {
 
   get numNapsPerDayChartData(): Observable<google.visualization.ChartSpecs> {
     return this.numNapsPerDay.pipe(
-      map((napData: NapGraphData[]) =>
-        this.createColumnChartData(napData.map(nd => nd.day), napData.map(nd => nd.num)))
-    );
+      map((napData: NapGraphData[]) => {
+        const columns = [
+          {label: "Date", type: "date"},
+          {label: "Number of Naps", type: "number"}
+        ] as google.visualization.GroupKeyOptions[];
+        const data = napData.map(nd => [nd.day, nd.num]);
+        return this.createColumnChartData(columns, data);
+      }
+    ));
   }
 
-  numNapsPerDayByChildChartData(childName: string): Observable<google.visualization.ChartSpecs> {
-    return this.numNapsPerDay.pipe(
-      map((napData: NapGraphData[]) => {
-        const childData = napData.filter(n => n.child === childName);
-        return this.createColumnChartData(childData.map(nd => nd.day), childData.map(nd => nd.num));
-      })
-    );
-  }
+  // numNapsPerDayByChildChartData(childName: string): Observable<google.visualization.ChartSpecs> {
+  //   return this.numNapsPerDay.pipe(
+  //     map((napData: NapGraphData[]) => {
+  //       const childData = napData.filter(n => n.child === childName);
+  //       return this.createColumnChartData(childData.map(nd => nd.day), childData.map(nd => nd.num));
+  //     })
+  //   );
+  // }
 
-  numNapsPerDayByMonthChartData(monthDate: Date): Observable<google.visualization.ChartSpecs> {
-    return this.numNapsPerDay.pipe(
-      map((napData: NapGraphData[]) => {
-        const childData = napData.filter(n => n.day.sameMonth(monthDate));
-        const chartData = this.createColumnChartData(
-            childData.map(nd => nd.day.convertToChartDateStringDay()),
-            childData.map(nd => nd.num));
-        return chartData;
-      })
-    );
+  // numNapsPerDayByMonthChartData(monthDate: Date): Observable<google.visualization.ChartSpecs> {
+  //   return this.numNapsPerDay.pipe(
+  //     map((napData: NapGraphData[]) => {
+  //       const childData = napData.filter(n => n.day.sameMonth(monthDate));
+  //       const chartData = this.createColumnChartData(
+  //           childData.map(nd => nd.day.convertToChartDateStringDay()),
+  //           childData.map(nd => nd.num));
+  //       return chartData;
+  //     })
+  //   );
+  // }
+
+  testChart(): Observable<google.visualization.ChartSpecs> {
+    return of({
+      chartType: "ColumnChart",
+      // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
+      dataTable: [
+        [{label: "Country", type: "string"},
+          {label: "Population", type: "number"},
+          {label: "Area", type: "number"}],
+        ["CN", 1324, 9640821 / 1000],
+        ["IN", 1133, 3287263 / 1000],
+        ["US", 304, 9629091 / 1000],
+        ["ID", 232, 1904569 / 1000],
+        ["BR", 187, 8514877 / 1000]
+      ]
+    });
   }
 
   get numNapsPerDay(): Observable<NapGraphData[]> {
@@ -84,13 +107,18 @@ export class EntryService {
     );
   }
 
-  private createColumnChartData(xaxis: any[], data: any[], title: string = "column chart"): google.visualization.ChartSpecs {
-    return {
-      chartType: "ColumnChart",
-      dataTable: [["", ...xaxis],
-                  ["", ...data]],
-      options: {title},
-    };
+
+  // tslint:disable-next-line:max-line-length
+  private createColumnChartData(
+    columns: google.visualization.GroupKeyOptions[],
+    data: any[][],
+    title: string = "column chart"): google.visualization.ChartSpecs {
+      return {
+        chartType: "ColumnChart",
+        // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
+        dataTable: [columns, ...data],
+        options: {title},
+      };
   }
 
   /**

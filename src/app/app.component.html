@@ -11,5 +11,4 @@
 
 "{{selectedChart?.name}}"
 
-
-<raw-chart *ngIf="selectedChart" [chartData]="selectedChart?.chartData | async" style="width:100%;"></raw-chart>
+<raw-chart [chartData]="selectedChart?.chartData | async" style="width:100%;"></raw-chart>
