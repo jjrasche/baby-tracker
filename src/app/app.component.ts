@@ -1,11 +1,11 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, AfterViewInit, AfterViewChecked } from "@angular/core";
-import { EntryService } from "./services/entryservice";
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild} from "@angular/core";
+import { EntryService } from "./services/entry.service";
 import { CsvParserService } from "./services/csv-parser.service";
 import { LocalFileReader } from "./services/local-file-reader.service";
 import { Entry } from "@models/entry";
 import { Observable, of } from "rxjs";
 import { ScriptLoaderService, RawChartComponent } from "angular-google-charts";
-import { take } from "rxjs/operators";
+import { NapService } from "./services/nap.service";
 
 class Chart {
   name: string;
@@ -26,7 +26,8 @@ export class AppComponent {
   public selectedChart: Chart;
 
   constructor(
-    public entryService: EntryService,
+    private entryService: EntryService,
+    private napService: NapService,
     parserService: CsvParserService,
     fileReader: LocalFileReader,
     private cdr: ChangeDetectorRef,
@@ -43,18 +44,6 @@ export class AppComponent {
   }
 
   initData() {
-    // datatable format
-    // const dataTable = new google.visualization.DataTable({
-    //   cols: [{id: "task", label: "Task", type: "string"},
-    //        {id: "hours", label: "Hours per Day", type: "number"}],
-    // rows: [{c: [{v: "Work"}, {v: 11}]},
-    //        {c: [{v: "Eat"}, {v: 2}]},
-    //        {c: [{v: "Commute"}, {v: 2}]},
-    //        {c: [{v: "Watch TV"}, {v: 2}]},
-    //        {c: [{v: "Sleep"}, {v: 7, f: "7.000"}]}],
-    // p: "1"
-    // }, 0.6);
-
     this.charts = [
       {
         name: "test",
@@ -62,20 +51,20 @@ export class AppComponent {
       },
       {
         name: "naps per day",
-        chartData: this.entryService.numNapsPerDayChartData
+        chartData: this.napService.numNapsPerDayChartData
       },
-      // {
-      //   name: "naps  per day (charlie)",
-      //   chartData: this.entryService.numNapsPerDayByChildChartData("Charlie")
-      // },
-      // {
-      //   name: "naps per day (theodore)",
-      //   chartData: this.entryService.numNapsPerDayByChildChartData("Theodore")
-      // },
-      // {
-      //   name: "naps per day (January)",
-      //   chartData: this.entryService.numNapsPerDayByMonthChartData(new Date("2020-1-1"))
-      // }
+      {
+        name: "naps  per day (charlie)",
+        chartData: this.napService.numNapsPerDayByChildChartData("Charlie")
+      },
+      {
+        name: "naps per day (theodore)",
+        chartData: this.napService.numNapsPerDayByChildChartData("Theodore")
+      },
+      {
+        name: "naps per day (January)",
+        chartData: this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1"))
+      }
     ];
     this.selectedChart = this.charts[0];
     this.cdr.markForCheck();
