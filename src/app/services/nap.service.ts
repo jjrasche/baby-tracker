@@ -1,17 +1,23 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { SleepEntry } from "@models/sleep";
 import { napsPerDayColumns } from "../column-configs";
 import { EntryService } from "./entry.service";
 import { NapGraphData } from "@models/nap-graph-data";
+import { Entry } from "@models/entry";
 
 @Injectable({providedIn: "root"})
 export class NapService {
 
   constructor(private entryService: EntryService) {}
 
-  // naps
+  napEntriesByDate(date: Date): BehaviorSubject<SleepEntry[]> {
+    return this.entryService.sleep.pipe(
+      map((sleepEntries: SleepEntry[]) => sleepEntries.filter(s => s.sleepType === "nap" && s.entryDate.sameDate(date)))
+    ) as BehaviorSubject<SleepEntry[]>;
+  }
+
   get numNapsPerDay(): Observable<NapGraphData[]> {
     return this.entryService.sleep.pipe(
       map((sleepEntries: SleepEntry[]) => {
@@ -45,12 +51,12 @@ export class NapService {
     ));
   }
 
-  numNapsPerDayByMonthChartData(monthDate: Date): Observable<google.visualization.ChartSpecs> {
+  numNapsPerDayByMonthChartData(monthDate: Date): BehaviorSubject<google.visualization.ChartSpecs> {
     return this.numNapsPerDay.pipe(
       map((napData: NapGraphData[]) => {
         return this.entryService.createColumnChartData(napsPerDayColumns,
           napData.filter(n => n.day.sameMonth(monthDate)).map(nd => [nd.day, nd.num]));
       }
-    ));
+    )) as BehaviorSubject<google.visualization.ChartSpecs>;
   }
 }

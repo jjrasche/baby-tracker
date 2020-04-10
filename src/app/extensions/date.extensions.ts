@@ -3,6 +3,7 @@ export { }; // this will make it module
 declare global {
   interface Date {
     sameMonth(monthDate: Date): boolean;
+    sameDate(date: Date): boolean;
     convertToChartDateStringDay(): string;
     convertToChartDateStringTime(): string;
   }
@@ -10,6 +11,10 @@ declare global {
 
 Date.prototype.sameMonth = function(monthDate: Date): boolean {
   return this.getMonth() === monthDate.getMonth();
+};
+
+Date.prototype.sameDate = function(date: Date): boolean {
+  return this.getDate() === date.getDate() && this.sameMonth(date);
 };
 
 Date.prototype.convertToChartDateStringDay = function(): string {

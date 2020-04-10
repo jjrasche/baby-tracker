@@ -16,5 +16,14 @@ Array.prototype.groupBy = function(getGroupValue: (a: any) => any) {
 };
 
 Array.prototype.unique = function(): [] {
-  return this.filter((v: any, i: any, a: string | any[]) => a.indexOf(v) === i);
+  // tslint:disable-next-line:triple-equals
+  const uniqueItems = [];
+  return this.filter(item => {
+    const stringified = JSON.stringify(item);
+    if (!uniqueItems.find(ui => ui === stringified)) {
+      uniqueItems.push(stringified);
+      return true;
+    }
+    return false;
+  });
 };

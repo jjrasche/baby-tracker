@@ -5,23 +5,21 @@ import { SleepEntry } from "@models/sleep";
 import { Entry } from "@models/entry";
 import { napsPerDayColumns } from "../column-configs";
 
-
 @Injectable({providedIn: "root"})
 export class EntryService {
-  private subject: BehaviorSubject<Entry[]>;
-  public entries: Observable<Entry[]>;
+  entries: BehaviorSubject<Entry[]>;
 
   constructor() {
-    this.subject = new BehaviorSubject<Entry[]>([]);
-    this.entries = this.subject.asObservable();
+    this.entries = new BehaviorSubject<Entry[]>([]);
   }
 
   addEntries(events: Entry[]) {
-    this.subject.next(events);
+    this.entries.next(events.unique());
+    // this.entries.next(events);
   }
 
   // selectors
-  get sleep(): Observable<SleepEntry[]> {
+  get sleep(): BehaviorSubject<SleepEntry[]> {
     return this.entries.pipe(
       map((entries: Entry[]) => {
         return entries
@@ -29,11 +27,11 @@ export class EntryService {
           .filter(e => e.activity == "Sleep")
           .map(entry => new SleepEntry(entry));
       })
-    );
+    ) as BehaviorSubject<SleepEntry[]>;
   }
 
 
-  testChart(): Observable<google.visualization.ChartSpecs> {
+  testChart(): Observable<any> { // Observable<google.visualization.ChartSpecs> {
     return of({
       chartType: "ColumnChart",
       // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
@@ -52,9 +50,9 @@ export class EntryService {
 
 
   public createColumnChartData(
-    columns: google.visualization.GroupKeyOptions[],
+    columns: any, // google.visualization.GroupKeyOptions[],
     data: any[][],
-    title: string = "column chart"): google.visualization.ChartSpecs {
+    title: string = "column chart"): any { // google.visualization.ChartSpecs {
       return {
         chartType: "ColumnChart",
         // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
