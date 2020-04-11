@@ -21,19 +21,25 @@ export class NapService {
     ) as BehaviorSubject<SleepEntry[]>;
   }
 
-  getNapsPerDay = (): Observable<any[]> => this.naps.pipe(map(naps => naps.selectGroupByAndCount(["entryDate"])));
-  getNapsPerDayByChild = (): Observable<any[]> =>
-    this.naps.pipe(map(naps => naps.selectGroupByAndCount(["entryDate", "childName"])))
+  getNapsPerDay = (): Observable<any[]> => {
+    return this.naps.pipe(map(naps => {
+      const ret = naps.selectGroupByAndCount(["entryDate"]);
+      return ret;
+    }));
+  }
+  getNapsPerDayByChild = (): Observable<any[]> => this.naps.pipe(map(naps => naps.selectGroupByAndCount(["entryDate", "childName"])));
 
   getnumNapsPerDayChartData = (): Observable<google.visualization.ChartSpecs> =>
     this.getNapsPerDay().pipe(map((napData: any[]) =>
       this.entryService.createColumnChartData(napsPerDayColumns, napData.map(nd => [nd.entryDate, nd.count]))))
 
   numNapsPerDayByChildChartData(childName: string): BehaviorSubject<google.visualization.ChartSpecs> {
-    return this.getNapsPerDay().pipe(
-      map((napData: any[]) =>
-        this.entryService.createColumnChartData(napsPerDayColumns,
-          napData.filter(n => n.childName === childName).map(nd => [nd.entryDate, nd.count]))
+    return this.getNapsPerDayByChild().pipe(
+      map((napData: any[]) => {
+        const ret = this.entryService.createColumnChartData(napsPerDayColumns,
+          napData.filter(n => n.childName === childName).map(nd => [nd.entryDate, nd.count]));
+        return ret;
+      }
     )).toBehaviorSubject();
   }
 
