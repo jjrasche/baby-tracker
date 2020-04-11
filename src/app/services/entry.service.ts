@@ -31,19 +31,21 @@ export class EntryService {
   }
 
 
-  testChart(): Observable<any> { // Observable<google.visualization.ChartSpecs> {
-    return of({
-      chartType: "ColumnChart",
+  testChart(): BehaviorSubject<any> { // Observable<google.visualization.ChartSpecs> {
+    return new BehaviorSubject({
+      chartType: "Timeline",
       // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
       dataTable: [
-        [{label: "Country", type: "string"},
-          {label: "Population", type: "number"},
-          {label: "Area", type: "number"}],
-        ["CN", 1324, 9640821 / 1000],
-        ["IN", 1133, 3287263 / 1000],
-        ["US", 304, 9629091 / 1000],
-        ["ID", 232, 1904569 / 1000],
-        ["BR", 187, 8514877 / 1000]
+        [{ type: "string", id: "Room" },
+        { type: "string", id: "Name" },
+        { type: "date", id: "Start" },
+        { type: "date", id: "End" }],
+        [ "Magnolia Room", "Beginning JavaScript",       new Date(0, 0, 0, 12, 0, 0),  new Date(0, 0, 0, 13, 30, 0) ],
+        [ "Magnolia Room", "Intermediate JavaScript",    new Date(0, 0, 0, 14, 0, 0),  new Date(0, 0, 0, 15, 30, 0) ],
+        [ "Magnolia Room", "Advanced JavaScript",        new Date(0, 0, 0, 16, 0, 0),  new Date(0, 0, 0, 17, 30, 0) ],
+        [ "Willow Room",   "Beginning Google Charts",    new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0) ],
+        [ "Willow Room",   "Intermediate Google Charts", new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0) ],
+        [ "Willow Room",   "Advanced Google Charts",     new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 0, 0) ]
       ]
     });
   }
@@ -55,6 +57,18 @@ export class EntryService {
     title: string = "column chart"): any { // google.visualization.ChartSpecs {
       return {
         chartType: "ColumnChart",
+        // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
+        dataTable: [columns, ...data],
+        options: {title},
+      };
+  }
+
+  public creteTimelineChartData(
+    columns: any, // google.visualization.GroupKeyOptions[],
+    data: any[][],
+    title: string = "timeline"): any { // google.visualization.ChartSpecs {
+      return {
+        chartType: "Timeline",
         // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable
         dataTable: [columns, ...data],
         options: {title},

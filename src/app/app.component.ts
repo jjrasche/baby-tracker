@@ -54,23 +54,23 @@ export class AppComponent {
 
   initData() {
     this.charts = [
-      {
-        name: "naps per day (January)",
-        chartData: this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1")),
-        selectMethod: (event: google.visualization.VisualizationSelectionArray[]) => {
-          this.selectedEntries = this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1"))
-            .pipe(
-              mergeMap((specs: google.visualization.ChartSpecs) => {
-              const data = specs.dataTable[event[0].row + 1];
-              const date = data[0];
-              return this.napService.napEntriesByDate(date);
-            }));
-        }
-      },
       // {
-      //   name: "test",
-      //   chartData: this.entryService.testChart()
+      //   name: "naps per day (January)",
+      //   chartData: this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1")),
+      //   selectMethod: (event: google.visualization.VisualizationSelectionArray[]) => {
+      //     this.selectedEntries = this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1"))
+      //       .pipe(
+      //         mergeMap((specs: google.visualization.ChartSpecs) => {
+      //         const data = specs.dataTable[event[0].row + 1];
+      //         const date = data[0];
+      //         return this.napService.napEntriesByDate(date);
+      //       }));
+      //   }
       // },
+      {
+        name: "test",
+        chartData: this.entryService.testChart()
+      },
       // {
       //   name: "naps per day",
       //   chartData: this.napService.numNapsPerDayChartData
