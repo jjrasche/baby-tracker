@@ -2,6 +2,7 @@ export { }; // this will make it module
 
 declare global {
   interface Date {
+    epoch(): number;
     sameMonth(monthDate: Date): boolean;
     sameDate(date: Date): boolean;
     convertToChartDateStringDay(): string;
@@ -33,5 +34,6 @@ Date.prototype.convertToChartDateStringTime = function(): string {
   return `Date(${year}, ${month}, ${date}, ${hours}, ${minutes}, 0, 0)`;
 };
 
-// "Date(Year, Month, Day, Hours, Minutes, Seconds, Milliseconds)"
-
+Date.prototype.epoch = function(): number {
+  return this.valueOf();
+};

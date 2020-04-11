@@ -9,7 +9,12 @@ declare global {
 }
 
 Array.prototype.selectGroupByAndCount = function(properties: string[]): any[] {
-  const groupMap = this.groupBy(e => properties.map(prop => e[prop].toString()).join("-")); // `${e.entryDate.toString()}-${e.childName}`);
+  const groupMap = this.groupBy(e => {
+    const ret = properties.map(prop => {
+        return e[prop].toString();
+    }).join("-");
+    return ret;
+  }); // `${e.entryDate.toString()}-${e.childName}`);
   const groupedWithCount = Object.keys(groupMap)
     .map(key => groupMap[key])
     .map((group: any[]) => {
