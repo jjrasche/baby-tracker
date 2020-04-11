@@ -8,6 +8,7 @@ import { ScriptLoaderService, RawChartComponent } from "angular-google-charts";
 import { NapService } from "./services/nap.service";
 import { SleepEntry } from "@models/sleep";
 import { mergeMap } from "rxjs/operators";
+import { TimelineService } from "./services/timeline.service";
 
 class Chart {
   name: string;
@@ -33,6 +34,7 @@ export class AppComponent {
   constructor(
     private entryService: EntryService,
     private napService: NapService,
+    private timeLineService: TimelineService,
     parserService: CsvParserService,
     fileReader: LocalFileReader,
     private cdr: ChangeDetectorRef,
@@ -67,18 +69,22 @@ export class AppComponent {
       //       }));
       //   }
       // },
-      {
-        name: "test",
-        chartData: this.entryService.testChart()
-      },
+      // {
+      //   name: "test",
+      //   chartData: this.entryService.testChart()
+      // },
+      // {
+      //   name: "charlie timeline",
+      //   chartData: this.timeLineService.getTimelineByChildChartData("Charlie")
+      // },
       // {
       //   name: "naps per day",
       //   chartData: this.napService.numNapsPerDayChartData
       // },
-      // {
-      //   name: "naps  per day (charlie)",
-      //   chartData: this.napService.numNapsPerDayByChildChartData("Charlie")
-      // },
+      {
+        name: "naps  per day (charlie)",
+        chartData: this.napService.numNapsPerDayByChildChartData("Charlie")
+      },
       // {
       //   name: "naps per day (theodore)",
       //   chartData: this.napService.numNapsPerDayByChildChartData("Theodore")

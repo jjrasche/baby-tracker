@@ -15,7 +15,6 @@ export class EntryService {
 
   addEntries(events: Entry[]) {
     this.entries.next(events.unique());
-    // this.entries.next(events);
   }
 
   // selectors

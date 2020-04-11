@@ -29,12 +29,12 @@ export class NapService {
     this.getNapsPerDay().pipe(map((napData: any[]) =>
       this.entryService.createColumnChartData(napsPerDayColumns, napData.map(nd => [nd.entryDate, nd.count]))))
 
-  numNapsPerDayByChildChartData(childName: string): Observable<google.visualization.ChartSpecs> {
+  numNapsPerDayByChildChartData(childName: string): BehaviorSubject<google.visualization.ChartSpecs> {
     return this.getNapsPerDay().pipe(
       map((napData: any[]) =>
         this.entryService.createColumnChartData(napsPerDayColumns,
           napData.filter(n => n.childName === childName).map(nd => [nd.entryDate, nd.count]))
-    ));
+    )).toBehaviorSubject();
   }
 
   numNapsPerDayByMonthChartData(monthDate: Date): BehaviorSubject<google.visualization.ChartSpecs> {
