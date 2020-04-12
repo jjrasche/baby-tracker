@@ -1,14 +1,50 @@
+import * as moment from "moment";
+
 export { }; // this will make it module
+export const defaultBaseDateString = "2000-1-1";
 
 declare global {
   interface Date {
     epoch(): number;
+    time(): Date;
+    dateOnly(): Date;
+    addDays(numDays: number): Date;
+    daysBetween(d: Date): number;
+    yearsBetween(d: Date): number;
     sameMonth(monthDate: Date): boolean;
     sameDate(date: Date): boolean;
     convertToChartDateStringDay(): string;
     convertToChartDateStringTime(): string;
   }
 }
+
+Date.prototype.addDays = function(numDays: number): Date {
+  const tempDate = new Date(this);
+  tempDate.setDate(tempDate.getDate() + numDays);
+  return tempDate;
+};
+
+Date.prototype.daysBetween = function(d: Date): number {
+  return moment(this).diff(moment(d), "days");
+};
+
+Date.prototype.yearsBetween = function(d: Date): number {
+  const a = this.getFullYear();
+  const b = d.getFullYear();
+  return Math.abs(a - b);
+};
+
+Date.prototype.time = function(): Date {
+  const time = new Date(defaultBaseDateString);
+  time.setHours(this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
+  return time;
+};
+
+Date.prototype.dateOnly = function(): Date {
+  const dateOnly = new Date(this);
+  dateOnly.setHours(0, 0, 0, 0);
+  return dateOnly;
+};
 
 Date.prototype.sameMonth = function(monthDate: Date): boolean {
   return this.getMonth() === monthDate.getMonth();

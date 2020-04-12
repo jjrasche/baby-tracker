@@ -73,18 +73,18 @@ export class AppComponent {
       //   name: "test",
       //   chartData: this.entryService.testChart()
       // },
-      // {
-      //   name: "charlie timeline",
-      //   chartData: this.timeLineService.getTimelineByChildChartData("Charlie")
-      // },
+      {
+        name: "charlie timeline",
+        chartData: this.timeLineService.getTimelineByChildChartData("Charlie")
+      },
       // {
       //   name: "naps per day",
       //   chartData: this.napService.numNapsPerDayChartData
       // },
-      {
-        name: "naps  per day (charlie)",
-        chartData: this.napService.numNapsPerDayByChildChartData("Charlie")
-      },
+      // {
+      //   name: "naps  per day (charlie)",
+      //   chartData: this.napService.numNapsPerDayByChildChartData("Charlie")
+      // },
       // {
       //   name: "naps per day (theodore)",
       //   chartData: this.napService.numNapsPerDayByChildChartData("Theodore")

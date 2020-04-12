@@ -51,7 +51,7 @@ const entry17 =  { startTime: new Date("2020-01-19T21:54:00.000Z"), endTime: new
 const entry18 =  { startTime: new Date("2020-01-19T21:54:00.000Z"), endTime: new Date("2020-01-19T22:19:00.000Z"), activity: "Sleep", duration: 25, quantity: null, extraData: null, text: "Charlie slept (25m)", notes: null, caregiver: "Jim", childName: "Charlie", sleepType: "nap", fullCycle: false } as SleepEntry;
 const entry19 =  { startTime: new Date("2020-01-19T21:54:00.000Z"), endTime: new Date("2020-01-19T22:19:00.000Z"), activity: "Sleep", duration: 25, quantity: null, extraData: null, text: "Charlie slept (25m)", notes: null, caregiver: "Jim", childName: "Charlie", sleepType: "nap", fullCycle: false } as SleepEntry;
 
-fdescribe("Array Extension", () => {
+describe("Array Extension", () => {
   let service: EntryService;
 
   beforeEach(() => {

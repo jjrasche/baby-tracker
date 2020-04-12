@@ -1,3 +1,5 @@
+import { SleepEntry } from "./sleep";
+
 export class Entry {
   startTime: Date;
   endTime: Date;
@@ -24,12 +26,48 @@ export class Entry {
   }
 
   get entryDate(): Date {
-    const tempDate = new Date(this.startTime);
-    tempDate.setHours(0, 0, 0, 0);
-    return tempDate;
+    return this.startTime.dateOnly();
+  }
+
+  get startDate(): Date {
+    return this.startTime.dateOnly();
+  }
+
+  get endDate(): Date {
+    return this.endTime.dateOnly();
+  }
+
+  getNormalizedStartEndTimes(focusDate: Date): Date[] {
+    const focusDay = focusDate.getDate();
+    const startDay = this.startTime.getDate();
+    const endDay = this.endTime.getDate();
+
+    let start: Date = this.startTime.time();
+    let end: Date = this.endTime.time();
+
+    if (focusDay === startDay && startDay !== endDay) {
+      start = this.startTime.time();
+      end = this.endTime.time().addDays(1);
+    } else if (focusDay === endDay && startDay !== endDay) {    // starts in previous day
+      start = this.startTime.time().addDays(-1);
+      end = this.endTime.time();
+    }
+    return [start, end];
   }
 
   get minutes(): number {
     return (this.startTime.getHours() * 60) + this.startTime.getMinutes();
+  }
+
+  get spansMultipleDays(): number {
+    return;
+  }
+
+  get timelineActivityLavel(): string {
+    // tslint:disable-next-line:triple-equals
+    if (this.activity == "Sleep") {
+      return (new SleepEntry(this)).sleepType;
+    }
+    return this.activity;
   }
 }

@@ -3,13 +3,16 @@ export { }; // this will make it module
 declare global {
   interface Array<T> {
     groupBy(getGroupValue: (a: T) => any): {[key: string]: T[]};
+    groupByProperties(properties: string[]): {[key: string]: T[]};
     selectGroupByAndCount(properties: string[]): any[];
     unique(): T[];
   }
 }
 
 Array.prototype.selectGroupByAndCount = function(properties: string[]): any[] {
-  const groupMap = this.groupBy(e => properties.map(prop => e[prop].toString()).join("-")); // `${e.entryDate.toString()}-${e.childName}`);
+  const groupMap = this.groupByProperties(properties);
+  // tslint:disable-next-line:max-line-length
+  // const groupMap = this.groupBy(e => properties.map(prop => e[prop].toString()).join("-")); // `${e.entryDate.toString()}-${e.childName}`);
   const groupedWithCount = Object.keys(groupMap)
     .map(key => groupMap[key])
     .map((group: any[]) => {
@@ -25,6 +28,10 @@ Array.prototype.selectGroupByAndCount = function(properties: string[]): any[] {
   return groupedWithCount;
 };
 
+Array.prototype.groupByProperties = function(properties: string[]) {
+  const groupMethod = e => properties.map(prop => e[prop].toString()).join("-");
+  return this.groupBy(groupMethod);
+};
 
 Array.prototype.groupBy = function(getGroupValue: (a: any) => any) {
   return this.reduce((rv, x) => {

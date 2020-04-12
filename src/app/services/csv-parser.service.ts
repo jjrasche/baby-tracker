@@ -29,7 +29,7 @@ export class CsvParserService {
       if (columns.length !== headers.length) {
         throw new Error(`Error Parsing Row(${row}): has ${columns.length} columns ${headers.length} were expected`);
       }
-      const event = {
+      const entry = new Entry({
         startTime: this.Convert(columns[0], this.dateType, "startTime", row),
         endTime: this.Convert(columns[1], this.dateType, "endTime", row),
         activity: this.Convert(columns[2], this.stringType, "activity", row),
@@ -40,8 +40,8 @@ export class CsvParserService {
         notes: this.Convert(columns[7], this.stringType, "notes", row),
         caregiver: this.Convert(columns[8], this.stringType, "caregiver", row),
         childName: this.Convert(columns[9], this.stringType, "childName", row),
-      } as Entry;
-      dataArray.push(event);
+      } as Entry);
+      dataArray.push(entry);
     });
     return dataArray;
   }
