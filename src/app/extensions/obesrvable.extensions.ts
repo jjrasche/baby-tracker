@@ -4,12 +4,12 @@ export { }; // this will make it module
 
 declare module "rxjs" {
   interface Observable<T> {
-    toBehaviorSubject(this: Observable<T>): BehaviorSubject<T> ;
+    toBehaviorSubject(initial?: any): BehaviorSubject<T> ;
   }
 }
 
-Observable.prototype.toBehaviorSubject = function(this: Observable<any>): BehaviorSubject<any> {
-  const subject = new BehaviorSubject(null);
+Observable.prototype.toBehaviorSubject = function(initial: any = null): BehaviorSubject<any> {
+  const subject = new BehaviorSubject(initial);
   this.subscribe({
       complete: () => subject.complete(),
       error: x => subject.error(x),

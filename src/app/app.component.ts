@@ -3,18 +3,13 @@ import { EntryService } from "./services/entry.service";
 import { CsvParserService } from "./services/csv-parser.service";
 import { LocalFileReader } from "./services/local-file-reader.service";
 import { Entry } from "@models/entry";
-import { Observable, of, BehaviorSubject } from "rxjs";
+import { Observable, of, BehaviorSubject, timer, interval } from "rxjs";
 import { ScriptLoaderService, RawChartComponent } from "angular-google-charts";
 import { NapService } from "./services/nap.service";
 import { SleepEntry } from "@models/sleep";
-import { mergeMap } from "rxjs/operators";
+import { mergeMap, map, tap } from "rxjs/operators";
 import { TimelineService } from "./services/timeline.service";
-
-class Chart {
-  name: string;
-  chartData: BehaviorSubject<google.visualization.ChartSpecs>;
-  selectMethod?: (event: google.visualization.VisualizationSelectionArray[]) => void;
-}
+import { ChartData } from "@models/chart-data";
 
 @Component({
   selector: "bm-root",
@@ -27,9 +22,11 @@ export class AppComponent {
   @ViewChild(RawChartComponent) chartElement: RawChartComponent;
   public title: string;
 
-  public charts: Chart[];
-  public selectedChart: Chart;
+  public charts: ChartData[];
+  public selectedChart: ChartData;
   public selectedEntries: Observable<Entry[]>;
+  private show = false;
+  showHide$ = interval(3000).pipe(tap(() => this.show = !this.show), map(() => this.show));
 
   constructor(
     private entryService: EntryService,
@@ -74,8 +71,10 @@ export class AppComponent {
       //   chartData: this.entryService.testChart()
       // },
       {
-        name: "sleep / nap sum (theodore)",
-        chartData: this.napService.napTimeByChildChartData("Theodore")
+        type: "ColumnChart",
+        title: "sleep / nap sum (theodore)",
+        columns: ["date", "naps", "sleep"],
+        getData: () => this.napService.napTimeByChildChartData("Theodore")
       },
       // {
       //   name: "charlie timeline",

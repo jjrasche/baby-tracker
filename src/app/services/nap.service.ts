@@ -79,7 +79,7 @@ export class NapService {
     )) as BehaviorSubject<google.visualization.ChartSpecs>;
   }
 
-  napTimeByChildChartData(childName: Child): BehaviorSubject<google.visualization.ChartSpecs> {
+  napTimeByChildChartData(childName: Child): BehaviorSubject<any[][]> {
     return combineLatest(
       this.getSleepEventsByChildByDate("sleep", childName),
       this.getSleepEventsByChildByDate("nap", childName)).pipe(
@@ -94,9 +94,8 @@ export class NapService {
           const matchingSleepSum = sleepSums.find(ss => ss.entryDate.sameDate(nap.entryDate));
           return [nap.entryDate, nap.sum, matchingSleepSum ? matchingSleepSum.sum : 0];
         });
-        const ret = this.entryService.createColumnChartData(["date", "naps", "sleep"], chartData);
-        return ret;
+        return chartData;
       }
-    )).toBehaviorSubject();
+    )).toBehaviorSubject([]);
   }
 }

@@ -6,16 +6,31 @@
 </ng-container> -->
 
 <select id="graphSelect" [(ngModel)]="selectedChart">
-  <option #chartData *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.name }} </option>
+  <option *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.title }} </option>
 </select>
 
-"{{selectedChart?.name}}"
-
-<ng-container *ngIf="selectedChart?.chartData | async">
-  <raw-chart [chartData]="selectedChart?.chartData | async" (select)="selectHandler($event)" style="width:100%"></raw-chart>
+<br>
+<ng-container *ngIf="selectedChart as chart">
+  {{selectedChart.title}}
+  <ng-container *ngIf="chart.getData() | async as data">
+    <google-chart *ngIf="data"
+      [type]="chart.type"
+      [columnNames]="chart.columns"
+      [data]="data"
+      (select)="chart.selectMethod($event)"
+      style="width:100%">
+    </google-chart>
+  </ng-container>
 </ng-container>
 
-<div *ngIf="selectedEntries | async as entries;">
+<ng-container *ngIf="showHide$ | async as showHide">
+  {{showHide}}
+  <span *ngIf="!!showHide"> show </span>
+  <span *ngIf="!showHide"> hide </span>
+</ng-container>
+
+
+<!-- <div *ngIf="selectedEntries | async as entries;">
   num: {{entries.length}}
   <span *ngFor="let entry of entries"> {{ JSON.stringify(entry) }} <br></span>
-</div>
+</div> -->
