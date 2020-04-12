@@ -17,20 +17,8 @@ export class EntryService {
     this.entries.next(events.unique());
   }
 
-  // selectors
-  get sleep(): BehaviorSubject<SleepEntry[]> {
-    return this.entries.pipe(
-      map((entries: Entry[]) => {
-        return entries
-          // tslint:disable-next-line:triple-equals
-          .filter(e => e.activity == "Sleep")
-          .map(entry => new SleepEntry(entry));
-      })
-    ) as BehaviorSubject<SleepEntry[]>;
-  }
 
-
-  testChart(): BehaviorSubject<any> { // Observable<google.visualization.ChartSpecs> {
+  testChart(): Observable<google.visualization.ChartSpecs> {
     return new BehaviorSubject({
       chartType: "Timeline",
       // https://developers.google.com/chart/interactive/docs/reference#arraytodatatable

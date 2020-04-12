@@ -11,7 +11,9 @@
 
 "{{selectedChart?.name}}"
 
-<raw-chart [chartData]="selectedChart?.chartData | async" (select)="selectHandler($event)" style="width:100%"></raw-chart>
+<ng-container *ngIf="selectedChart?.chartData | async">
+  <raw-chart [chartData]="selectedChart?.chartData | async" (select)="selectHandler($event)" style="width:100%"></raw-chart>
+</ng-container>
 
 <div *ngIf="selectedEntries | async as entries;">
   num: {{entries.length}}

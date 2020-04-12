@@ -1,5 +1,7 @@
 import { SleepEntry } from "./sleep";
 
+export type Child = "Charlie" | "Theodore";
+
 export class Entry {
   startTime: Date;
   endTime: Date;
@@ -10,7 +12,7 @@ export class Entry {
   text: string;
   notes: string;
   caregiver: string;
-  childName: string;
+  childName: Child;
 
   constructor(entry: Entry) {
     this.startTime = entry.startTime;

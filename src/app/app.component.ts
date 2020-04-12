@@ -74,9 +74,13 @@ export class AppComponent {
       //   chartData: this.entryService.testChart()
       // },
       {
-        name: "charlie timeline",
-        chartData: this.timeLineService.getTimelineByChildChartData("Charlie")
+        name: "sleep / nap sum (theodore)",
+        chartData: this.napService.napTimeByChildChartData("Theodore")
       },
+      // {
+      //   name: "charlie timeline",
+      //   chartData: this.timeLineService.getTimelineByChildChartData("Charlie")
+      // },
       // {
       //   name: "naps per day",
       //   chartData: this.napService.numNapsPerDayChartData
