@@ -1,38 +1,26 @@
-<!-- <ng-container *ngIf="entryService.numNapsPerDay | async as napsPerDay">
-  {{napsPerDay.length}}
-  <div *ngFor="let day of napsPerDay">
-    {{ day.day | date:"shortDate"}} - {{ day.num }} - {{ day.child }}
-  </div>
-</ng-container> -->
+<mat-spinner *ngIf="loading"></mat-spinner>
+<ng-container *ngIf="!loading">
+  <select id="graphSelect" [(ngModel)]="selectedChart">
+    <option *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.title }} </option>
+  </select>
 
-<select id="graphSelect" [(ngModel)]="selectedChart">
-  <option *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.title }} </option>
-</select>
-
-<br>
-<ng-container *ngIf="selectedChart as chart">
-  {{selectedChart.title}}
-  <ng-container *ngIf="chart.getData() | async as data">
-    <google-chart *ngIf="data.length > 0"
-      [type]="chart.type"
-      [columnNames]="chart.columns"
-      [data]="data"
-      (select)="chart.selectMethod($event)"
-      style="width:100%">
-    </google-chart>
-    <mat-spinner *ngIf="data.length <= 0"></mat-spinner>
-
+  <br>
+  <ng-container *ngIf="selectedChart as chart">
+    {{selectedChart.title}}
+    <ng-container *ngIf="selectedChart.data$ | async as data">
+      <google-chart
+        [type]="chart.type"
+        [columnNames]="chart.columns"
+        [data]="data"
+        (select)="chart.selectMethod($event)"
+        style="width:100%">
+      </google-chart>
+    </ng-container>
   </ng-container>
+
+  <br>
 </ng-container>
 
-<ng-container *ngIf="showHide$ | async as showHide">
-  {{showHide}}
-  <span *ngIf="!!showHide"> show </span>
-  <span *ngIf="!showHide"> hide </span>
-</ng-container>
-
-
-<!-- <div *ngIf="selectedEntries | async as entries;">
-  num: {{entries.length}}
-  <span *ngFor="let entry of entries"> {{ JSON.stringify(entry) }} <br></span>
-</div> -->
+<div>
+  {{ JSON.stringify(selectedChart.data$.value) }}
+</div>

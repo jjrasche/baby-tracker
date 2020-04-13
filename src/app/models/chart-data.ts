@@ -6,6 +6,6 @@ export class ChartData {
   // tslint:disable-next-line:max-line-length
   type: "AnnotationChart" | "AreaChart" | "Bar" | "BarChart" | "BubbleChart" | "Calendar" | "CandlestickChart" | "ColumnChart" | "ComboChart" | "PieChart" | "Gantt" | "Gauge" | "GeoChart" | "Histogram" | "Line" | "LineChart" | "Map" | "OrgChart" | "Sankey" | "Scatter" | "ScatterChart" | "SteppedAreaChart" | "Table" | "Timeline" | "TreeMap" | "WordTree";
   columns: string[];
-  getData: () => BehaviorSubject<any[][]>;
+  data$: BehaviorSubject<any[][]>;
   selectMethod?: (event: google.visualization.VisualizationSelectionArray[]) => void;
 }

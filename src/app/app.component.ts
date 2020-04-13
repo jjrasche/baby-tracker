@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild} from "@angular/core";
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, OnInit} from "@angular/core";
 import { EntryService } from "./services/entry.service";
 import { CsvParserService } from "./services/csv-parser.service";
 import { LocalFileReader } from "./services/local-file-reader.service";
@@ -17,7 +17,7 @@ import { ChartData } from "@models/chart-data";
   styleUrls: ["./app.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   JSON = JSON;
   @ViewChild(RawChartComponent) chartElement: RawChartComponent;
   public title: string;
@@ -25,8 +25,17 @@ export class AppComponent {
   public charts: ChartData[];
   public selectedChart: ChartData;
   public selectedEntries: Observable<Entry[]>;
-  private show = false;
-  showHide$ = interval(3000).pipe(tap(() => this.show = !this.show), map(() => this.show));
+  private num = 1;
+  loading = true;
+  // getNumObservable = () => interval(1000).pipe(map(() => {
+  //   const ret: any[][] = [];
+  //   const internal = [this.num++];
+  //   ret.push(internal);
+  //   return ret;
+  // })).toBehaviorSubject("lsdjf")
+  // num$ = interval(1000).pipe(map(() => [[this.num++]])).toBehaviorSubject("lsdjf");
+  // num$ = interval(1000).toBehaviorSubject("lsdjf");
+  getTypeof = (thing: any) => typeof thing;
 
   constructor(
     private entryService: EntryService,
@@ -37,14 +46,26 @@ export class AppComponent {
     private cdr: ChangeDetectorRef,
     public chartsLoaderService: ScriptLoaderService
     ) {
+      console.log("start");
       // google.load("visualization", "1.0", {packages: ["table"]});
       // google.setOnLoadCallback(this.initData.bind(this));
       // chartsLoaderService.onReady.pipe(take(1)).subscribe(() => (this.initData()));
       fileReader.readFile("assets/data/baby-data.csv").subscribe((csvString: string) => {
+        console.log("file read");
         const data: Entry[] = parserService.ParseData(csvString);
+        console.log("parsed");
         entryService.addEntries(data);
+        this.loading = false;
+        cdr.markForCheck();
+        console.log("entries added");
+        // this.napService.napTimeByChildChartData("Theodore").subscribe((d) => console.log(d));
+        // const bs = new BehaviorSubject(5);
+        // this.num$.subscribe((d) => console.log(d));
       });
       this.initData();
+  }
+
+  ngOnInit() {
   }
 
   selectHandler(item: any) {
@@ -74,7 +95,7 @@ export class AppComponent {
         type: "ColumnChart",
         title: "sleep / nap sum (theodore)",
         columns: ["date", "naps", "sleep"],
-        getData: () => this.napService.napTimeByChildChartData("Theodore")
+        data$: this.napService.napTimeByChildChartData("Theodore")
       },
       // {
       //   name: "charlie timeline",

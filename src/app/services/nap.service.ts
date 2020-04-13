@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, filter } from "rxjs/operators";
 import { SleepEntry, SleepType } from "@models/sleep";
 import { napsPerDayColumns } from "../column-configs";
 import { EntryService } from "./entry.service";
@@ -49,6 +49,7 @@ export class NapService {
 
   getSleepEventsByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.sleep.pipe(
     map(sleepEntries => {
+      console.log(`getSleepEventsByChildByDate ${sleepType}     ${child}`);
       // tslint:disable-next-line:triple-equals
       return sleepEntries.filter(se => se.sleepType == sleepType && se.childName == child)
       .selectGroupByAndAggregate(
@@ -83,19 +84,17 @@ export class NapService {
     return combineLatest(
       this.getSleepEventsByChildByDate("sleep", childName),
       this.getSleepEventsByChildByDate("nap", childName)).pipe(
-      // map((data) => {
+      filter((data: [SumByDate[], SumByDate[]]) => data[0].length !== 0 && data[1].length !== 0 ),
       map((data: [SumByDate[], SumByDate[]]) => {
         const sleepSums = data[0];
         const napSums = data[1];
-        if (sleepSums.length === 0 || napSums.length === 0 ) {
-          return null;
-        }
         const chartData = napSums.map(nap => {
           const matchingSleepSum = sleepSums.find(ss => ss.entryDate.sameDate(nap.entryDate));
           return [nap.entryDate, nap.sum, matchingSleepSum ? matchingSleepSum.sum : 0];
         });
+        console.log(`created chart data ${chartData.length}`);
         return chartData;
       }
-    )).toBehaviorSubject([]);
+    )).toBehaviorSubject();
   }
 }
