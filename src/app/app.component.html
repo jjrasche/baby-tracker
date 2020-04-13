@@ -13,13 +13,15 @@
 <ng-container *ngIf="selectedChart as chart">
   {{selectedChart.title}}
   <ng-container *ngIf="chart.getData() | async as data">
-    <google-chart *ngIf="data"
+    <google-chart *ngIf="data.length > 0"
       [type]="chart.type"
       [columnNames]="chart.columns"
       [data]="data"
       (select)="chart.selectMethod($event)"
       style="width:100%">
     </google-chart>
+    <mat-spinner *ngIf="data.length <= 0"></mat-spinner>
+
   </ng-container>
 </ng-container>
 
