@@ -30,7 +30,7 @@ export class ChartData {
       "Timeline" |
       "TreeMap" |
       "WordTree";
-  columns: string[];
+  columns: any[];
   data$: BehaviorSubject<any[][]>;
   options?: google.visualization.GeoChartOptions |
             google.visualization.ChartTrendlineOptions |

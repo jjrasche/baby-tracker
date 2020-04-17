@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, OnInit} from "@angular/core";
-import { EntryService, axisOptions } from "./services/entry.service";
+import { EntryService } from "./services/entry.service";
 import { CsvParserService } from "./services/csv-parser.service";
 import { LocalFileReader } from "./services/local-file-reader.service";
 import { Entry } from "@models/entry";
@@ -10,6 +10,7 @@ import { SleepEntry } from "@models/sleep";
 import { mergeMap, map, tap } from "rxjs/operators";
 import { TimelineService } from "./services/timeline.service";
 import { ChartData } from "@models/chart-data";
+import { activityTimeline } from "./column-configs";
 
 @Component({
   selector: "bm-root",
@@ -21,6 +22,7 @@ export class AppComponent implements OnInit {
   JSON = JSON;
   @ViewChild(RawChartComponent) chartElement: RawChartComponent;
   public title: string;
+  stackedChartOptions: google.visualization.ColumnChartOptions;
 
   public charts: ChartData[];
   public selectedChart: ChartData;
@@ -46,7 +48,6 @@ export class AppComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public chartsLoaderService: ScriptLoaderService
     ) {
-      console.log("start");
       // google.load("visualization", "1.0", {packages: ["table"]});
       // google.setOnLoadCallback(this.initData.bind(this));
       // chartsLoaderService.onReady.pipe(take(1)).subscribe(() => (this.initData()));
@@ -66,6 +67,26 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.stackedChartOptions = {
+      isStacked: true,
+      explorer: {
+        actions: ["dragToPan"],
+        axis: "horizontal",
+      },
+      hAxis: {
+        viewWindow: {
+          min: new Date(2020, 3, 18),
+          max: new Date(2020, 4, 18)
+        },
+      },
+      vAxis: {
+        title: "minutes",
+        viewWindow: {
+          min: 0,
+          max: 1100
+        },
+      },
+    };
   }
 
   selectHandler(item: any) {
@@ -94,8 +115,7 @@ export class AppComponent implements OnInit {
       {
         type: "ColumnChart",
         title: "sleep / nap sum (theodore)",
-        columns: ["date", "naps", "sleep"],
-        // options: { hAxis: axisOptions },
+        columns: ["date", "sleep", "naps"],
         options: {
           isStacked: true,
           explorer: {
@@ -104,13 +124,9 @@ export class AppComponent implements OnInit {
           },
           hAxis: {
             viewWindow: {
-              min: new Date(2019, 11, 15),
-              max: new Date(2019, 12, 15)
+              min: (new Date()).addDays(-30),
+              max: new Date()
             },
-            // minValue: .5
-            // viewWindow: {
-            //   max: 10
-            // }
           },
           vAxis: {
             title: "minutes",
@@ -119,18 +135,41 @@ export class AppComponent implements OnInit {
               max: 1100
             },
           },
-          animation: {
-            duration: 250,
-            easing: "ease-in-out",
-            startup: true
-          }
         },
         data$: this.napService.napTimeByChildChartData("Theodore")
       },
-      // {
-      //   name: "charlie timeline",
-      //   chartData: this.timeLineService.getTimelineByChildChartData("Charlie")
-      // },
+      {
+        type: "ColumnChart",
+        title: "sleep / nap sum (charlie)",
+        columns: ["date", "sleep", "naps"],
+        options: {
+          isStacked: true,
+          explorer: {
+            actions: ["dragToPan"],
+            axis: "horizontal",
+          },
+          hAxis: {
+            viewWindow: {
+              min: (new Date()).addDays(-30),
+              max: new Date()
+            },
+          },
+          vAxis: {
+            title: "minutes",
+            viewWindow: {
+              min: 0,
+              max: 1100
+            },
+          },
+        },
+        data$: this.napService.napTimeByChildChartData("Charlie")
+      },
+      {
+        type: "Timeline",
+        title: "s,djfsd",
+        columns: activityTimeline,
+        data$: this.timeLineService.getTimelineByChildChartData("Charlie")
+      },
       // {
       //   name: "naps per day",
       //   chartData: this.napService.numNapsPerDayChartData

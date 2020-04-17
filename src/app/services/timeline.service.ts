@@ -32,7 +32,7 @@ export class TimelineService {
     ).toBehaviorSubject();
   }
 
-  getTimelineByChildChartData(childName: string): BehaviorSubject<google.visualization.ChartSpecs> {
+  getTimelineByChildChartData(childName: string): BehaviorSubject<any[][]> {
     return this.entriesStartingOrEndingOnDate.pipe(
       map((groupedDayEntries: {[num: number]: Entry[]}) => {
         const chartData = [];
@@ -54,8 +54,8 @@ export class TimelineService {
             });
         });
         const ret = this.entryService.creteTimelineChartData(activityTimeline, chartData);
-        console.log(chartData);
-        return ret;
+        // console.log(chartData);
+        return chartData;
     })).toBehaviorSubject();
   }
 

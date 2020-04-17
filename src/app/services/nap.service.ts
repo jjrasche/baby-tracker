@@ -90,7 +90,7 @@ export class NapService {
         const napSums = data[1];
         const chartData = napSums.map(nap => {
           const matchingSleepSum = sleepSums.find(ss => ss.entryDate.sameDate(nap.entryDate));
-          return [nap.entryDate, nap.sum, matchingSleepSum ? matchingSleepSum.sum : 0];
+          return [nap.entryDate, matchingSleepSum ? matchingSleepSum.sum : 0, nap.sum];
         });
         console.log(`created chart data ${chartData.length}`);
         return chartData;
