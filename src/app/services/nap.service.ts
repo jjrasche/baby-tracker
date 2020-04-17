@@ -81,9 +81,9 @@ export class NapService {
   }
 
   napTimeByChildChartData(childName: Child): BehaviorSubject<any[][]> {
-    return combineLatest(
+    return combineLatest([
       this.getSleepEventsByChildByDate("sleep", childName),
-      this.getSleepEventsByChildByDate("nap", childName)).pipe(
+      this.getSleepEventsByChildByDate("nap", childName)]).pipe(
       filter((data: [SumByDate[], SumByDate[]]) => data[0].length !== 0 && data[1].length !== 0 ),
       map((data: [SumByDate[], SumByDate[]]) => {
         const sleepSums = data[0];

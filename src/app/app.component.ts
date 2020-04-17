@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, OnInit} from "@angular/core";
-import { EntryService } from "./services/entry.service";
+import { EntryService, axisOptions } from "./services/entry.service";
 import { CsvParserService } from "./services/csv-parser.service";
 import { LocalFileReader } from "./services/local-file-reader.service";
 import { Entry } from "@models/entry";
@@ -95,6 +95,36 @@ export class AppComponent implements OnInit {
         type: "ColumnChart",
         title: "sleep / nap sum (theodore)",
         columns: ["date", "naps", "sleep"],
+        // options: { hAxis: axisOptions },
+        options: {
+          isStacked: true,
+          explorer: {
+            actions: ["dragToPan"],
+            axis: "horizontal",
+          },
+          hAxis: {
+            viewWindow: {
+              min: new Date(2019, 11, 15),
+              max: new Date(2019, 12, 15)
+            },
+            // minValue: .5
+            // viewWindow: {
+            //   max: 10
+            // }
+          },
+          vAxis: {
+            title: "minutes",
+            viewWindow: {
+              min: 0,
+              max: 1100
+            },
+          },
+          animation: {
+            duration: 250,
+            easing: "ease-in-out",
+            startup: true
+          }
+        },
         data$: this.napService.napTimeByChildChartData("Theodore")
       },
       // {
