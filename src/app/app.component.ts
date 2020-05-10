@@ -9,8 +9,9 @@ import { NapService } from "./services/nap.service";
 import { SleepEntry } from "@models/sleep";
 import { mergeMap, map, tap } from "rxjs/operators";
 import { TimelineService } from "./services/timeline.service";
-import { ChartData } from "@models/chart-data";
-import { activityTimeline } from "./column-configs";
+import { ChartData, SleepStackedChart, ActivityTimelienChart } from "@models/chart-data";
+import { activityTimelineColuns } from "./column-configs";
+import { ChartDataService } from "./services/chart-data.service";
 
 @Component({
   selector: "bm-root",
@@ -46,7 +47,8 @@ export class AppComponent implements OnInit {
     parserService: CsvParserService,
     fileReader: LocalFileReader,
     private cdr: ChangeDetectorRef,
-    public chartsLoaderService: ScriptLoaderService
+    public chartsLoaderService: ScriptLoaderService,
+    private chartDataService: ChartDataService
     ) {
       // google.load("visualization", "1.0", {packages: ["table"]});
       // google.setOnLoadCallback(this.initData.bind(this));
@@ -59,9 +61,6 @@ export class AppComponent implements OnInit {
         this.loading = false;
         cdr.markForCheck();
         console.log("entries added");
-        // this.napService.napTimeByChildChartData("Theodore").subscribe((d) => console.log(d));
-        // const bs = new BehaviorSubject(5);
-        // this.num$.subscribe((d) => console.log(d));
       });
       this.initData();
   }
@@ -95,6 +94,11 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
+      this.chartDataService.createSleepStackedChart("Theodore"),
+      this.chartDataService.createSleepStackedChart("Charlie"),
+      this.chartDataService.createActivityTimelienChart("Theodore"),
+      this.chartDataService.createActivityTimelienChart("Charlie"),
+
       // {
       //   name: "naps per day (January)",
       //   chartData: this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1")),
@@ -112,64 +116,6 @@ export class AppComponent implements OnInit {
       //   name: "test",
       //   chartData: this.entryService.testChart()
       // },
-      {
-        type: "ColumnChart",
-        title: "sleep / nap sum (theodore)",
-        columns: ["date", "sleep", "naps"],
-        options: {
-          isStacked: true,
-          explorer: {
-            actions: ["dragToPan"],
-            axis: "horizontal",
-          },
-          hAxis: {
-            viewWindow: {
-              min: (new Date()).addDays(-30),
-              max: new Date()
-            },
-          },
-          vAxis: {
-            title: "minutes",
-            viewWindow: {
-              min: 0,
-              max: 1100
-            },
-          },
-        },
-        data$: this.napService.napTimeByChildChartData("Theodore")
-      },
-      {
-        type: "ColumnChart",
-        title: "sleep / nap sum (charlie)",
-        columns: ["date", "sleep", "naps"],
-        options: {
-          isStacked: true,
-          explorer: {
-            actions: ["dragToPan"],
-            axis: "horizontal",
-          },
-          hAxis: {
-            viewWindow: {
-              min: (new Date()).addDays(-30),
-              max: new Date()
-            },
-          },
-          vAxis: {
-            title: "minutes",
-            viewWindow: {
-              min: 0,
-              max: 1100
-            },
-          },
-        },
-        data$: this.napService.napTimeByChildChartData("Charlie")
-      },
-      {
-        type: "Timeline",
-        title: "s,djfsd",
-        columns: activityTimeline,
-        data$: this.timeLineService.getTimelineByChildChartData("Charlie")
-      },
       // {
       //   name: "naps per day",
       //   chartData: this.napService.numNapsPerDayChartData

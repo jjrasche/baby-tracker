@@ -46,6 +46,21 @@ export class CsvParserService {
     return dataArray;
   }
 
+  DataToString(entry: Entry): string {
+    return [
+      JSON.stringify(entry.startTime),
+      JSON.stringify(entry.endTime),
+      entry.activity,
+      entry.duration,
+      entry.quantity,
+      entry.extraData,
+      entry.text,
+      entry.notes,
+      entry.caregiver,
+      entry.childName
+    ].join(",");
+  }
+
   private splitLine(line: string): string[] {
     return line.split(this.csvSplit).filter((ele, idx) => idx % 2 === 1);
   }

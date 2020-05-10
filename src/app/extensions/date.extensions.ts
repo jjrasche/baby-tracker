@@ -15,6 +15,7 @@ declare global {
     sameDate(date: Date): boolean;
     convertToChartDateStringDay(): string;
     convertToChartDateStringTime(): string;
+    compareDate(date: Date): number;
   }
 }
 
@@ -72,4 +73,16 @@ Date.prototype.convertToChartDateStringTime = function(): string {
 
 Date.prototype.epoch = function(): number {
   return this.valueOf();
+};
+
+Date.prototype.compareDate = function(d: Date): number {
+  if (d.getTime() === this.getTime()) {
+    return 0;
+  }
+  if (d > this) {
+    return 1;
+  }
+  if (d < this) {
+    return -1;
+  }
 };

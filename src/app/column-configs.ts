@@ -4,7 +4,7 @@ export const napsPerDayColumns: google.visualization.GroupKeyOptions[] = [
 ] as google.visualization.GroupKeyOptions[];
 
 
-export const activityTimeline: google.visualization.GroupKeyOptions[] = [
+export const activityTimelineColuns: google.visualization.GroupKeyOptions[] = [
   { type: "string", id: "Day" },
   { type: "string", id: "Activity" },
   { type: "date", id: "Start" },
