@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Child } from "@models/entry";
-import { activityTimelineColuns } from "../column-configs";
+import { activityTimelineColuns, WokeUpVsBedTime } from "../column-configs";
 import { NapService } from "./nap.service";
 import { ChartData } from "@models/chart-data";
 import { TimelineService } from "./timeline.service";
@@ -49,5 +49,28 @@ export class ChartDataService {
       data$: this.timelineService.getTimelineByChildChartData(child)
     };
   }
+
+  createTrendLinePlot(): ChartData {
+    return {
+      type: "ScatterChart",
+      title: `"time woke up vs. time went to bed",`,
+      columns: WokeUpVsBedTime,
+      data$: this.napService.wokeUpVsBedTimeData()
+    };
+  }
+
+  // trendline
+  // var options = {
+  //   title: 'Age vs. Weight comparison',
+  //   legend: 'none',
+  //   crosshair: { trigger: "both", orientation: "both" },
+  //   trendlines: {
+  //     0: {
+  //       type: 'polynomial',
+  //       degree: 3,
+  //       visibleInLegend: true,
+  //     }
+  //   }
+  // };
 
 }

@@ -1,4 +1,6 @@
 import { Entry } from "@models/entry";
+import { FactoryService } from "../services/factory.service";
+import { SleepEntry } from "@models/sleep";
 
 export { }; // this will make it module
 // tslint:disable:no-string-literal
@@ -46,7 +48,9 @@ Array.prototype.groupBy = function(getGroupValue: (a: any) => any) {
   return this.reduce((rv, x) => {
     const key = getGroupValue(x);
     // the immutable solved one issue where, but limits what this comes out as.
-    (rv[key] = rv[key] || []).push(new Entry(x));
+    const factory = new FactoryService(x.constructor);
+    const immutableCopy = factory.getNew(x);
+    (rv[key] = rv[key] || []).push(immutableCopy);
     return rv;
   }, {});
 };

@@ -9,7 +9,7 @@ import { NapService } from "./services/nap.service";
 import { SleepEntry } from "@models/sleep";
 import { mergeMap, map, tap } from "rxjs/operators";
 import { TimelineService } from "./services/timeline.service";
-import { ChartData, SleepStackedChart, ActivityTimelienChart } from "@models/chart-data";
+import { ChartData } from "@models/chart-data";
 import { activityTimelineColuns } from "./column-configs";
 import { ChartDataService } from "./services/chart-data.service";
 
@@ -94,6 +94,7 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
+      this.chartDataService.createTrendLinePlot(),
       this.chartDataService.createSleepStackedChart("Theodore"),
       this.chartDataService.createSleepStackedChart("Charlie"),
       this.chartDataService.createActivityTimelienChart("Theodore"),

@@ -47,7 +47,7 @@ export class NapService {
   getNapsPerDayByChild = (): Observable<any[]> =>
     this.naps.pipe(map(naps => naps.selectGroupByAndAggregate(["entryDate", "childName"], [countAggregateFunction])))
 
-  getSleepEventsByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.sleep.pipe(
+  getSleepEventDurationByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.sleep.pipe(
     map(sleepEntries => {
       console.log(`getSleepEventsByChildByDate ${sleepType}     ${child}`);
       // tslint:disable-next-line:triple-equals
@@ -82,8 +82,8 @@ export class NapService {
 
   napTimeByChildChartData(childName: Child): BehaviorSubject<any[][]> {
     return combineLatest([
-      this.getSleepEventsByChildByDate("sleep", childName),
-      this.getSleepEventsByChildByDate("nap", childName)]).pipe(
+      this.getSleepEventDurationByChildByDate("sleep", childName),
+      this.getSleepEventDurationByChildByDate("nap", childName)]).pipe(
       filter((data: [SumByDate[], SumByDate[]]) => data[0].length !== 0 && data[1].length !== 0 ),
       map((data: [SumByDate[], SumByDate[]]) => {
         const sleepSums = data[0];
@@ -94,6 +94,17 @@ export class NapService {
         });
         console.log(`created chart data ${chartData.length}`);
         return chartData;
+      }
+    )).toBehaviorSubject();
+  }
+
+  // [<wake time>, <sleep time>]
+  wokeUpVsBedTimeData(): BehaviorSubject<any[][]> {
+    return this.sleep.pipe(
+      map((sleepData: SleepEntry[]) => {
+        const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
+
+        return null;
       }
     )).toBehaviorSubject();
   }

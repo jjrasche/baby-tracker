@@ -10,3 +10,9 @@ export const activityTimelineColuns: google.visualization.GroupKeyOptions[] = [
   { type: "date", id: "Start" },
   { type: "date", id: "End" }
 ] as google.visualization.GroupKeyOptions[];
+
+
+export const WokeUpVsBedTime: google.visualization.GroupKeyOptions[] = [
+  { type: "date", id: "WokeUp" },
+  { type: "date", id: "BedTime" }
+] as google.visualization.GroupKeyOptions[];

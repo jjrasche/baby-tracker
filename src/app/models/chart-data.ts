@@ -1,6 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-import { Child } from "./entry";
-import { activityTimelineColuns } from "../column-configs";
 
 export class ChartData {
   title: string;
@@ -49,41 +47,3 @@ export class ChartData {
             = {};
   selectMethod?: (event: google.visualization.VisualizationSelectionArray[]) => void;
 }
-
-export const SleepStackedChart = (child: Child): ChartData => {
-  return {
-    type: "ColumnChart",
-    title: `sleep stacked - ${child}`,
-    columns: ["date", "sleep", "naps"],
-    options: {
-      isStacked: true,
-      explorer: {
-        actions: ["dragToPan"],
-        axis: "horizontal",
-      },
-      hAxis: {
-        viewWindow: {
-          min: (new Date()).addDays(-30),
-          max: new Date()
-        },
-      },
-      vAxis: {
-        title: "minutes",
-        viewWindow: {
-          min: 0,
-          max: 1100
-        },
-      },
-    },
-    data$: this.napService.napTimeByChildChartData(child)
-  };
-};
-
-export const ActivityTimelienChart = (child: Child): ChartData => {
-  return {
-    type: "Timeline",
-    title: `timeline - ${child}`,
-    columns: activityTimelineColuns,
-    data$: this.timeLineService.getTimelineByChildChartData(child)
-  };
-};
