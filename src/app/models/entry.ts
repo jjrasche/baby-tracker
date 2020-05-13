@@ -64,12 +64,4 @@ export class Entry {
   get spansMultipleDays(): number {
     return;
   }
-
-  get timelineActivityLavel(): string {
-    // tslint:disable-next-line:triple-equals
-    if (this.activity == "Sleep") {
-      return (new SleepEntry(this)).sleepType;
-    }
-    return this.activity;
-  }
 }

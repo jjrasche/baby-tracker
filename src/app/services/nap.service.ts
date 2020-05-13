@@ -102,9 +102,9 @@ export class NapService {
   wokeUpVsBedTimeData(): BehaviorSubject<any[][]> {
     return this.sleep.pipe(
       map((sleepData: SleepEntry[]) => {
-        const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
-
-        return null;
+        // const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
+        const arr = sleepData.map(sd => [sd.startTime, sd.sleepType]);
+        return arr;
       }
     )).toBehaviorSubject();
   }

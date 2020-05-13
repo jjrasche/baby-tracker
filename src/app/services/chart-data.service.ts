@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Child } from "@models/entry";
-import { activityTimelineColuns, WokeUpVsBedTime } from "../column-configs";
+import { activityTimelineColumns, WokeUpVsBedTime } from "../column-configs";
 import { NapService } from "./nap.service";
 import { ChartData } from "@models/chart-data";
 import { TimelineService } from "./timeline.service";
@@ -45,7 +45,7 @@ export class ChartDataService {
     return {
       type: "Timeline",
       title: `timeline - ${child}`,
-      columns: activityTimelineColuns,
+      columns: activityTimelineColumns,
       data$: this.timelineService.getTimelineByChildChartData(child)
     };
   }

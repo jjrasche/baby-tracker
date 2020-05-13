@@ -10,7 +10,6 @@ import { SleepEntry } from "@models/sleep";
 import { mergeMap, map, tap } from "rxjs/operators";
 import { TimelineService } from "./services/timeline.service";
 import { ChartData } from "@models/chart-data";
-import { activityTimelineColuns } from "./column-configs";
 import { ChartDataService } from "./services/chart-data.service";
 
 @Component({

@@ -4,7 +4,7 @@ export const napsPerDayColumns: google.visualization.GroupKeyOptions[] = [
 ] as google.visualization.GroupKeyOptions[];
 
 
-export const activityTimelineColuns: google.visualization.GroupKeyOptions[] = [
+export const activityTimelineColumns: google.visualization.GroupKeyOptions[] = [
   { type: "string", id: "Day" },
   { type: "string", id: "Activity" },
   { type: "date", id: "Start" },
@@ -13,6 +13,6 @@ export const activityTimelineColuns: google.visualization.GroupKeyOptions[] = [
 
 
 export const WokeUpVsBedTime: google.visualization.GroupKeyOptions[] = [
-  { type: "date", id: "WokeUp" },
-  { type: "date", id: "BedTime" }
+  { type: "date", id: "Start Time" },
+  { type: "string", id: "Type" }
 ] as google.visualization.GroupKeyOptions[];

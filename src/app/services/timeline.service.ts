@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { SleepEntry } from "@models/sleep";
-import { napsPerDayColumns, activityTimelineColuns } from "../column-configs";
 import { EntryService } from "./entry.service";
 import { Entry } from "@models/entry";
 import * as moment from "moment";
@@ -46,7 +45,7 @@ export class TimelineService {
               const str = moment(entry.entryDate).format("ddd MMM D");
               chartData.push([
                 str,
-                entry.timelineActivityLavel,
+                this.timelineActivityLabel(entry),
                 ...entry.getNormalizedStartEndTimes(date)
                 // entry.startTime,
                 // entry.endTime
@@ -55,6 +54,14 @@ export class TimelineService {
         });
         return chartData;
     })).toBehaviorSubject();
+  }
+
+  private timelineActivityLabel(e: Entry): string {
+    // tslint:disable-next-line:triple-equals
+    if (e.activity == "Sleep") {
+      return (new SleepEntry(e)).sleepType;
+    }
+    return e.activity;
   }
 
 
