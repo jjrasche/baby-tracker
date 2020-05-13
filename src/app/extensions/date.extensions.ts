@@ -16,6 +16,7 @@ declare global {
     convertToChartDateStringDay(): string;
     convertToChartDateStringTime(): string;
     compareDate(date: Date): number;
+    getTimeOfDayObject(): number[];
   }
 }
 
@@ -86,3 +87,8 @@ Date.prototype.compareDate = function(d: Date): number {
     return -1;
   }
 };
+
+Date.prototype.getTimeOfDayObject = function(): number[] {
+  return [this.getHours(), this.getMinutes(), this.getSeconds()];
+};
+

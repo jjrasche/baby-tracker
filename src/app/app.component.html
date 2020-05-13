@@ -14,7 +14,8 @@
         [data]="data"
         [options]="chart.options"
         (select)="chart.selectMethod($event)"
-        style="width:100%">
+        [height]="1000"
+        [width]="1700">
       </google-chart>
     </ng-container>
   </ng-container>
@@ -22,6 +23,6 @@
   <br>
 </ng-container>
 
-<!-- <div>
+<div>
   {{ JSON.stringify(selectedChart.data$.value) }}
-</div> -->
+</div>

@@ -13,6 +13,6 @@ export const activityTimelineColumns: google.visualization.GroupKeyOptions[] = [
 
 
 export const WokeUpVsBedTime: google.visualization.GroupKeyOptions[] = [
-  { type: "date", id: "Start Time" },
-  { type: "string", id: "Type" }
+  { type: "timeofday", id: "startTime", label: "Start Time" },
+  { type: "timeofday", id: "endTime", label: "End Time" }
 ] as google.visualization.GroupKeyOptions[];

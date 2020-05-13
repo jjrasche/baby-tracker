@@ -8,6 +8,7 @@ export { }; // this will make it module
 declare global {
   interface Array<T> {
     groupBy(getGroupValue: (a: T) => any): {[key: string]: T[]};
+    sortByProperty(property: string): T[];
     groupByProperties(properties: string[]): {[key: string]: T[]};
     selectGroupByAndAggregate(properties: string[], aggFunc?: aggregateFunction[]): any[];
     unique(): T[];
@@ -53,6 +54,11 @@ Array.prototype.groupBy = function(getGroupValue: (a: any) => any) {
     (rv[key] = rv[key] || []).push(immutableCopy);
     return rv;
   }, {});
+};
+
+Array.prototype.sortByProperty = function(property: string) {
+  const sorted = (this as []).sort((a, b) => a[property] - b[property] );
+  return sorted;
 };
 
 Array.prototype.unique = function(): [] {

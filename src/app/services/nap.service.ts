@@ -17,7 +17,7 @@ export class NapService {
 
   constructor(private entryService: EntryService) {}
 
-  get sleep(): BehaviorSubject<SleepEntry[]> {
+  get all(): BehaviorSubject<SleepEntry[]> {
     return this.entryService.entries.pipe(
       map((entries: Entry[]) => {
         return entries
@@ -28,12 +28,16 @@ export class NapService {
     ) as BehaviorSubject<SleepEntry[]>;
   }
 
+  get sleep(): Observable<SleepEntry[]> {
+    return this.all.pipe(map(e => e.filter(s => s.sleepType === "sleep")));
+  }
+
   get naps(): Observable<SleepEntry[]> {
-    return this.sleep.pipe(map(e => e.filter(s => s.sleepType === "nap")));
+    return this.all.pipe(map(e => e.filter(s => s.sleepType === "nap")));
   }
 
   napEntriesByDate(date: Date): BehaviorSubject<SleepEntry[]> {
-    return this.sleep.pipe(
+    return this.all.pipe(
       map((sleepEntries: SleepEntry[]) => sleepEntries.filter(s => s.sleepType === "nap" && s.entryDate.sameDate(date)))
     ) as BehaviorSubject<SleepEntry[]>;
   }
@@ -47,7 +51,7 @@ export class NapService {
   getNapsPerDayByChild = (): Observable<any[]> =>
     this.naps.pipe(map(naps => naps.selectGroupByAndAggregate(["entryDate", "childName"], [countAggregateFunction])))
 
-  getSleepEventDurationByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.sleep.pipe(
+  getSleepEventDurationByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.all.pipe(
     map(sleepEntries => {
       console.log(`getSleepEventsByChildByDate ${sleepType}     ${child}`);
       // tslint:disable-next-line:triple-equals
@@ -102,8 +106,15 @@ export class NapService {
   wokeUpVsBedTimeData(): BehaviorSubject<any[][]> {
     return this.sleep.pipe(
       map((sleepData: SleepEntry[]) => {
-        // const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
-        const arr = sleepData.map(sd => [sd.startTime, sd.sleepType]);
+        const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
+        const arr = [];
+        Object.keys(childSleepDataByDate).forEach(date => {
+          const group = childSleepDataByDate[date].sortByProperty("startTime");
+          const startSleep = group[0];
+          const endSleep = group[group.length - 1];
+          arr.push([startSleep.startTime.getTimeOfDayObject(), endSleep.endTime.getTimeOfDayObject()]);
+        });
+        // const arr = sleepData.map(sd => [sd.startTime.getTimeOfDayObject(), sd.sleepType === "nap" ? 0 : 1]);
         return arr;
       }
     )).toBehaviorSubject();
