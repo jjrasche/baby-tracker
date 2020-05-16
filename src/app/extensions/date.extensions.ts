@@ -3,6 +3,11 @@ import * as moment from "moment";
 export { }; // this will make it module
 export const defaultBaseDateString = "2000-1-1";
 
+export class DateRange {
+  start: Date;
+  end: Date;
+}
+
 declare global {
   interface Date {
     epoch(): number;
@@ -27,7 +32,7 @@ Date.prototype.addDays = function(numDays: number): Date {
 };
 
 Date.prototype.daysBetween = function(d: Date): number {
-  return moment(this).diff(moment(d), "days");
+  return Math.abs(moment(this).diff(moment(d), "days"));
 };
 
 Date.prototype.yearsBetween = function(d: Date): number {
@@ -91,4 +96,3 @@ Date.prototype.compareDate = function(d: Date): number {
 Date.prototype.getTimeOfDayObject = function(): number[] {
   return [this.getHours(), this.getMinutes(), this.getSeconds()];
 };
-

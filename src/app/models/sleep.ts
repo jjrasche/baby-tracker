@@ -3,16 +3,16 @@ import { Entry } from "@models/entry";
 export const MinutesInHour = 60;
 export const fullCycle = 42;
 export type SleepType = "nap" | "sleep";
+export const nightTimeStart = (): number => 18 * MinutesInHour;
+export const nightTimeEnd = (): number => 6 * MinutesInHour;
 
 export class SleepEntry extends Entry {
   sleepType: SleepType;
   fullCycle: boolean;
-  get nightTimeStart(): number { return 18 * MinutesInHour; }
-  get nightTimeEnd(): number { return 6 * MinutesInHour; }
 
   constructor(entry: Entry) {
     super(entry);
-    this.sleepType = (this.nightTimeStart < this.minutes || this.minutes < this.nightTimeEnd) ? "sleep" : "nap";
+    this.sleepType = (nightTimeStart() < this.minutes || this.minutes < nightTimeEnd()) ? "sleep" : "nap";
     this.fullCycle = this.duration > fullCycle ? true : false;
   }
 }

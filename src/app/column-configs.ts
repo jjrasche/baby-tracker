@@ -14,5 +14,7 @@ export const activityTimelineColumns: google.visualization.GroupKeyOptions[] = [
 
 export const WokeUpVsBedTime: google.visualization.GroupKeyOptions[] = [
   { type: "timeofday", id: "startTime", label: "Start Time" },
-  { type: "timeofday", id: "endTime", label: "End Time" }
+  { type: "timeofday", id: "endTime", label: "End Time" },
+  { role: "style" },
+  { role: "tooltip" }
 ] as google.visualization.GroupKeyOptions[];

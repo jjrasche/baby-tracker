@@ -5,13 +5,20 @@ import { SleepEntry } from "@models/sleep";
 export { }; // this will make it module
 // tslint:disable:no-string-literal
 
+export enum SortDirection {
+  Ascending,
+  Descending
+}
+
 declare global {
   interface Array<T> {
     groupBy(getGroupValue: (a: T) => any): {[key: string]: T[]};
-    sortByProperty(property: string): T[];
-    groupByProperties(properties: string[]): {[key: string]: T[]};
+    sortByProperty(property: string, direction?: SortDirection): T[];
+    groupByProperties(properties: string[], direction?: SortDirection): {[key: string]: T[]};
     selectGroupByAndAggregate(properties: string[], aggFunc?: aggregateFunction[]): any[];
     unique(): T[];
+    last(): T;
+    getDateRange(): [Date, Date];
   }
 }
 // common aggregate functions
@@ -56,8 +63,14 @@ Array.prototype.groupBy = function(getGroupValue: (a: any) => any) {
   }, {});
 };
 
-Array.prototype.sortByProperty = function(property: string) {
-  const sorted = (this as []).sort((a, b) => a[property] - b[property] );
+Array.prototype.sortByProperty = function(property: string, direction: SortDirection = SortDirection.Ascending) {
+  const sorted = (this as []).sort((a, b) => {
+    if (direction === SortDirection.Ascending) {
+      return a[property] - b[property];
+    } else {
+      return b[property] - a[property];
+    }
+  });
   return sorted;
 };
 
@@ -72,4 +85,14 @@ Array.prototype.unique = function(): [] {
     }
     return false;
   });
+};
+
+Array.prototype.last = function(): any {
+  // tslint:disable-next-line:triple-equals
+  return this[this.length - 1];
+};
+
+Array.prototype.getDateRange = function(): [Date, Date] {
+  const sortedArray = this.sort();
+  return [sortedArray.last(), sortedArray[0]];
 };

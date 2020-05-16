@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
 import { map, filter } from "rxjs/operators";
-import { SleepEntry, SleepType } from "@models/sleep";
+import { SleepEntry, SleepType, nightTimeStart } from "@models/sleep";
 import { napsPerDayColumns } from "../column-configs";
 import { EntryService } from "./entry.service";
 import { Entry, Child } from "@models/entry";
-import { countAggregateFunction, sumPropertyAggregateFunction } from "../extensions/array.extensions";
+import { countAggregateFunction, sumPropertyAggregateFunction, SortDirection } from "../extensions/array.extensions";
 
 export interface SumByDate {
   sum: number;
@@ -29,7 +29,13 @@ export class NapService {
   }
 
   get sleep(): Observable<SleepEntry[]> {
-    return this.all.pipe(map(e => e.filter(s => s.sleepType === "sleep")));
+    return this.all.pipe(
+        map(e => {
+            const ret = e.filter(s => s.sleepType === "sleep")
+            .sortByProperty("startTime", SortDirection.Ascending);
+            return ret;
+        })
+    );
   }
 
   get naps(): Observable<SleepEntry[]> {
@@ -111,12 +117,64 @@ export class NapService {
         Object.keys(childSleepDataByDate).forEach(date => {
           const group = childSleepDataByDate[date].sortByProperty("startTime");
           const startSleep = group[0];
-          const endSleep = group[group.length - 1];
-          arr.push([startSleep.startTime.getTimeOfDayObject(), endSleep.endTime.getTimeOfDayObject()]);
+          const endSleep = group.last();
+          const color = startSleep.childName === "Charlie" ? "pink" : "blue";
+          arr.push([startSleep.startTime.getTimeOfDayObject(), endSleep.endTime.getTimeOfDayObject(), color]);
         });
         // const arr = sleepData.map(sd => [sd.startTime.getTimeOfDayObject(), sd.sleepType === "nap" ? 0 : 1]);
         return arr;
       }
     )).toBehaviorSubject();
+  }
+
+  // [<wake time>, <first nap next day>]
+  wokeUpVsFirstNapStartData(): BehaviorSubject<any[][]> {
+    return this.all.pipe(
+      filter(d => d.length > 0),
+      map((sleepData: SleepEntry[]) => {
+        const dateRange = sleepData.map(sd => sd.startTime).getDateRange();
+        const daysInDateRange = dateRange[0].daysBetween(dateRange[1]);
+        const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
+        const arr = [];
+        Object.keys(childSleepDataByDate).forEach(groupKey => {
+          const groupChild = groupKey.split("-").last();
+          const group = childSleepDataByDate[groupKey];
+          const startSleep = this.getStartSleepEntry(group);
+          if (startSleep == null) {
+            return;
+          }
+          const nextGroupKey = `${startSleep.startTime.dateOnly().addDays(1).toString()}-${groupChild}`;
+          let nextDaysGroup = childSleepDataByDate[nextGroupKey];
+          if (nextDaysGroup == null) {
+            return;
+          }
+          nextDaysGroup = nextDaysGroup.sortByProperty("startTime", SortDirection.Descending);
+          const firstNap = this.getFirstNapEntry(nextDaysGroup);
+          if (firstNap == null) {
+            return;
+          }
+          const color = startSleep.childName === "Charlie" ? "pink" : "blue";
+          const opacity = dateRange[0].daysBetween(startSleep.startTime) / daysInDateRange;
+          arr.push([
+            startSleep.startTime.getTimeOfDayObject(),
+            firstNap.startTime.getTimeOfDayObject(),
+            `color: ${startSleep.childName === "Charlie" ? "pink" : "blue"}; fill-opacity: ${opacity}`,  // style
+            groupKey
+          ]);
+        });
+        // const arr = sleepData.map(sd => [sd.startTime.getTimeOfDayObject(), sd.sleepType === "nap" ? 0 : 1]);
+        return arr;
+      }
+    )).toBehaviorSubject();
+  }
+
+  private getStartSleepEntry(sleeps: SleepEntry[]): SleepEntry {
+    const sleepsAfterNightStart = sleeps.filter(sleep => sleep.minutes > nightTimeStart());
+    return sleepsAfterNightStart.sort()[0];
+  }
+
+  private getFirstNapEntry(events: SleepEntry[]): SleepEntry {
+    const sleepsAfterNightStart = events.filter(event => event.sleepType === "nap");
+    return sleepsAfterNightStart.sort().last();
   }
 }

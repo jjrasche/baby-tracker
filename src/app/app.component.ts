@@ -93,41 +93,12 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
-      this.chartDataService.createTrendLinePlot(),
+      this.chartDataService.createWokeUpFirstNapStartChart(),
+      this.chartDataService.createWokeUpBedTimeChart(),
       this.chartDataService.createSleepStackedChart("Theodore"),
       this.chartDataService.createSleepStackedChart("Charlie"),
       this.chartDataService.createActivityTimelienChart("Theodore"),
       this.chartDataService.createActivityTimelienChart("Charlie"),
-
-      // {
-      //   name: "naps per day (January)",
-      //   chartData: this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1")),
-      //   selectMethod: (event: google.visualization.VisualizationSelectionArray[]) => {
-      //     this.selectedEntries = this.napService.numNapsPerDayByMonthChartData(new Date("2020-1-1"))
-      //       .pipe(
-      //         mergeMap((specs: google.visualization.ChartSpecs) => {
-      //         const data = specs.dataTable[event[0].row + 1];
-      //         const date = data[0];
-      //         return this.napService.napEntriesByDate(date);
-      //       }));
-      //   }
-      // },
-      // {
-      //   name: "test",
-      //   chartData: this.entryService.testChart()
-      // },
-      // {
-      //   name: "naps per day",
-      //   chartData: this.napService.numNapsPerDayChartData
-      // },
-      // {
-      //   name: "naps  per day (charlie)",
-      //   chartData: this.napService.numNapsPerDayByChildChartData("Charlie")
-      // },
-      // {
-      //   name: "naps per day (theodore)",
-      //   chartData: this.napService.numNapsPerDayByChildChartData("Theodore")
-      // }
     ];
     this.selectedChart = this.charts[0];
     this.cdr.markForCheck();

@@ -50,12 +50,32 @@ export class ChartDataService {
     };
   }
 
-  createTrendLinePlot(): ChartData {
+  createWokeUpBedTimeChart(): ChartData {
     return {
       type: "ScatterChart",
       title: `"time woke up vs. time went to bed",`,
       columns: WokeUpVsBedTime,
+      options: {
+        explorer: {
+          actions: ["dragToZoom", "rightClickToReset"],
+          // axis: "horizontal",
+        },
+      },
       data$: this.napService.wokeUpVsBedTimeData()
+    };
+  }
+
+  createWokeUpFirstNapStartChart(): ChartData {
+    return {
+      type: "ScatterChart",
+      title: `"time woke up vs. start of first nap",`,
+      columns: WokeUpVsBedTime,
+      options: {
+        explorer: {
+          actions: ["dragToZoom", "rightClickToReset"],
+        },
+      },
+      data$: this.napService.wokeUpVsFirstNapStartData()
     };
   }
 
