@@ -93,8 +93,8 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
-      this.chartDataService.createWokeUpFirstNapStartChart(),
       this.chartDataService.createWokeUpBedTimeChart(),
+      this.chartDataService.createWokeUpFirstNapStartChart(),
       this.chartDataService.createSleepStackedChart("Theodore"),
       this.chartDataService.createSleepStackedChart("Charlie"),
       this.chartDataService.createActivityTimelienChart("Theodore"),

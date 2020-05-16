@@ -4,12 +4,16 @@ import { activityTimelineColumns, WokeUpVsBedTime } from "../column-configs";
 import { NapService } from "./nap.service";
 import { ChartData } from "@models/chart-data";
 import { TimelineService } from "./timeline.service";
+import { DataSetService } from "./data-set.service";
+import { getChildColor, getOpacity } from "@models/styel-method";
+import { defaultToolTipMethod } from "@models/tool-tip-method";
 
 @Injectable({providedIn: "root"})
 export class ChartDataService {
   constructor(
     private napService: NapService,
-    private timelineService: TimelineService
+    private timelineService: TimelineService,
+    private dataSetService: DataSetService
   ) {}
 
   createSleepStackedChart(child: Child): ChartData {
@@ -54,14 +58,25 @@ export class ChartDataService {
     return {
       type: "ScatterChart",
       title: `"time woke up vs. time went to bed",`,
-      columns: WokeUpVsBedTime,
+      columns: [
+        { type: "timeofday", id: "endTime", label: "End Time" },
+        { type: "timeofday", id: "startTime", label: "Start Time" },
+        { role: "style" },
+        { role: "tooltip"}
+      ],
       options: {
-        explorer: {
-          actions: ["dragToZoom", "rightClickToReset"],
-          // axis: "horizontal",
-        },
+        explorer: { actions: ["dragToZoom", "rightClickToReset"] },
+        vAxis: { title: "Start Bed Time" },
+        hAxis: { title: "Sleep Wake Up Time" },
+        tooltip: {isHtml: true},
       },
-      data$: this.napService.wokeUpVsBedTimeData()
+      // data$: this.napService.wokeUpVsBedTimeData()
+      data$: this.dataSetService.mergeDataSets(
+        this.dataSetService.morningWakeUptime(),
+        this.dataSetService.bedTimeStart(),
+        [getChildColor, getOpacity],
+        defaultToolTipMethod
+        )
     };
   }
 
@@ -74,10 +89,14 @@ export class ChartDataService {
         explorer: {
           actions: ["dragToZoom", "rightClickToReset"],
         },
+        vAxis: { title: "minutes" },
+        hAxis: { title: "minutes" },
       },
       data$: this.napService.wokeUpVsFirstNapStartData()
     };
   }
+
+  // length of nap vs. time since last nap
 
   // trendline
   // var options = {

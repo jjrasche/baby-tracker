@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
 import { map, filter } from "rxjs/operators";
-import { SleepEntry, SleepType, nightTimeStart } from "@models/sleep";
+import { SleepEntry, SleepType, nightTimeStart, nightTimeEnd } from "@models/sleep";
 import { napsPerDayColumns } from "../column-configs";
 import { EntryService } from "./entry.service";
 import { Entry, Child } from "@models/entry";
 import { countAggregateFunction, sumPropertyAggregateFunction, SortDirection } from "../extensions/array.extensions";
+import { DataSet } from "@models/data-set";
 
 export interface SumByDate {
   sum: number;
@@ -19,6 +20,7 @@ export class NapService {
 
   get all(): BehaviorSubject<SleepEntry[]> {
     return this.entryService.entries.pipe(
+      filter(d => d.length > 0),
       map((entries: Entry[]) => {
         return entries
           // tslint:disable-next-line:triple-equals

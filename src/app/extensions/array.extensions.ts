@@ -18,6 +18,7 @@ declare global {
     selectGroupByAndAggregate(properties: string[], aggFunc?: aggregateFunction[]): any[];
     unique(): T[];
     last(): T;
+    first(): T;
     getDateRange(): [Date, Date];
   }
 }
@@ -88,10 +89,12 @@ Array.prototype.unique = function(): [] {
 };
 
 Array.prototype.last = function(): any {
-  // tslint:disable-next-line:triple-equals
   return this[this.length - 1];
 };
 
+Array.prototype.first = function(): any {
+  return this[0];
+};
 Array.prototype.getDateRange = function(): [Date, Date] {
   const sortedArray = this.sort();
   return [sortedArray.last(), sortedArray[0]];
