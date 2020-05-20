@@ -7,6 +7,8 @@ import { TimelineService } from "./timeline.service";
 import { DataSetService } from "./data-set.service";
 import { getChildColor, getOpacity } from "@models/styel-method";
 import { defaultToolTipMethod } from "@models/tool-tip-method";
+import { BehaviorSubject } from "rxjs";
+import { ChartColumn } from "@models/chart-column";
 
 @Injectable({providedIn: "root"})
 export class ChartDataService {
@@ -54,28 +56,57 @@ export class ChartDataService {
     };
   }
 
-  createWokeUpBedTimeChart(): ChartData {
+  /**
+   * need
+   *  - title
+   *  - data type
+   *  - data
+   */
+  createScatterChart(col1: BehaviorSubject<ChartColumn>, col2: BehaviorSubject<ChartColumn>): ChartData {
     return {
       type: "ScatterChart",
-      title: `"time woke up vs. time went to bed",`,
+      title: ` ${col1.value.title} vs. ${col2.value.title}`,
       columns: [
-        { type: "timeofday", id: "endTime", label: "End Time" },
-        { type: "timeofday", id: "startTime", label: "Start Time" },
+        { type: col1.value.dataType },
+        { type: col2.value.dataType },
         { role: "style" },
-        { role: "tooltip"}
+        // { role: "tooltip"}
       ],
       options: {
         explorer: { actions: ["dragToZoom", "rightClickToReset"] },
-        vAxis: { title: "Start Bed Time" },
-        hAxis: { title: "Sleep Wake Up Time" },
-        tooltip: {isHtml: true},
+        vAxis: { title: col1.value.title },
+        hAxis: { title: col2.value.title },
+        trendlines: { 0: {} }
+        // tooltip: {isHtml: true},
       },
-      // data$: this.napService.wokeUpVsBedTimeData()
+      data$: this.dataSetService.mergeDataSets(col1, col2, [getChildColor, getOpacity])
+    };
+  }
+
+  createWokeUpBedTimeChart(): ChartData {
+    return {
+      type: "ScatterChart",
+      title: `time woke up vs. time went to bed`, // *
+      columns: [
+        // { type: "timeofday", id: "endTime", label: "End Time" }, // *
+        // { type: "timeofday", id: "startTime", label: "Start Time" },
+        // { role: "style" },
+        { type: "timeofday" }, // *
+        { type: "timeofday"},
+        { role: "style" },
+        // { role: "tooltip"}
+      ],
+      options: {
+        explorer: { actions: ["dragToZoom", "rightClickToReset"] },
+        vAxis: { title: "Start Bed Time" }, // *
+        hAxis: { title: "Sleep Wake Up Time" },
+        trendlines: { 0: {} }
+        // tooltip: {isHtml: true},
+      },
       data$: this.dataSetService.mergeDataSets(
-        this.dataSetService.morningWakeUptime(),
+        this.dataSetService.morningWakeUptime(), // *
         this.dataSetService.bedTimeStart(),
         [getChildColor, getOpacity],
-        defaultToolTipMethod
         )
     };
   }

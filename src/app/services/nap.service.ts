@@ -6,7 +6,6 @@ import { napsPerDayColumns } from "../column-configs";
 import { EntryService } from "./entry.service";
 import { Entry, Child } from "@models/entry";
 import { countAggregateFunction, sumPropertyAggregateFunction, SortDirection } from "../extensions/array.extensions";
-import { DataSet } from "@models/data-set";
 
 export interface SumByDate {
   sum: number;

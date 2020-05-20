@@ -1,6 +1,6 @@
 import { Child } from "./entry";
 
-export class DataSet {
+export class Datumn {
 
   constructor(
     public time: Date,
@@ -8,7 +8,7 @@ export class DataSet {
     public data: any
   ) {}
 
-  match(prospect: DataSet): boolean {
+  match(prospect: Datumn): boolean {
     return this.child === prospect.child &&
       this.time.sameDate(prospect.time);
   }

@@ -11,6 +11,7 @@ import { mergeMap, map, tap } from "rxjs/operators";
 import { TimelineService } from "./services/timeline.service";
 import { ChartData } from "@models/chart-data";
 import { ChartDataService } from "./services/chart-data.service";
+import { DataSetService } from "./services/data-set.service";
 
 @Component({
   selector: "bm-root",
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit {
 
   public charts: ChartData[];
   public selectedChart: ChartData;
+  public selectedChart$: Observable<ChartData>;
   public selectedEntries: Observable<Entry[]>;
   private num = 1;
   loading = true;
@@ -47,7 +49,8 @@ export class AppComponent implements OnInit {
     fileReader: LocalFileReader,
     private cdr: ChangeDetectorRef,
     public chartsLoaderService: ScriptLoaderService,
-    private chartDataService: ChartDataService
+    private chartDataService: ChartDataService,
+    private dataSetService: DataSetService
     ) {
       // google.load("visualization", "1.0", {packages: ["table"]});
       // google.setOnLoadCallback(this.initData.bind(this));
@@ -93,6 +96,7 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
+      // this.chartDataService.createScatterChart(this.dataSetService.bedTimeStart(), this.dataSetService.morningWakeUptime()),
       this.chartDataService.createWokeUpBedTimeChart(),
       this.chartDataService.createWokeUpFirstNapStartChart(),
       this.chartDataService.createSleepStackedChart("Theodore"),
