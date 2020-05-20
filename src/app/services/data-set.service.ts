@@ -29,31 +29,23 @@ string;
   }
 
   // TODO: should make this a combinelatest
-  mergeDataSets(d1: BehaviorSubject<ChartColumn>, d2: BehaviorSubject<ChartColumn>,
-                styleSetters: StyleMethod[] = null, toolTipMethod: ToolTipMethod = null): BehaviorSubject<any[][]> {
-    return combineLatest([d1, d2]).pipe(
-      filter(data => data[0] != null && data[1] != null),
-      map((data) => {
-        const ret: any[][] = [];
-        const data1 = data[0].data;
-        const data2 = data[1].data;
-        // match each unique child, time combo into a 2 x n array
-        data1.forEach((datumn1: Datumn) => {
-          const matchingDatumn2 = data2.find(datumn2 => datumn2.match(datumn1));
-          if (matchingDatumn2) {
-            const arr = [datumn1.data, matchingDatumn2.data];
-            if (styleSetters) {
-              arr.push(styleSetters.map(setter => setter(datumn1, matchingDatumn2, data1)).join("; "));
-            }
-            if (toolTipMethod) {
-              arr.push(defaultToolTipMethod(datumn1, matchingDatumn2));
-            }
-            ret.push(arr);
-          }
-        });
-        return ret;
+  mergeDataSets(data1: Datumn[], data2: Datumn[], styleSetters: StyleMethod[] = null, toolTipMethod: ToolTipMethod = null): any[][] {
+    const ret: any[][] = [];
+    // match each unique child, time combo into a 2 x n array
+    data1.forEach((datumn1: Datumn) => {
+      const matchingDatumn2 = data2.find(datumn2 => datumn2.match(datumn1));
+      if (matchingDatumn2) {
+        const arr = [datumn1.data, matchingDatumn2.data];
+        if (styleSetters) {
+          arr.push(styleSetters.map(setter => setter(datumn1, matchingDatumn2, data1)).join("; "));
+        }
+        if (toolTipMethod) {
+          arr.push(defaultToolTipMethod(datumn1, matchingDatumn2));
+        }
+        ret.push(arr);
       }
-    )).toBehaviorSubject();
+    });
+    return ret;
   }
 
   morningWakeUptime(): BehaviorSubject<ChartColumn> {

@@ -30,7 +30,7 @@ export class ChartData {
       "TreeMap" |
       "WordTree";
   columns: any[];
-  data$: BehaviorSubject<any[][]>;
+  data: any[][];
   options?: google.visualization.GeoChartOptions |
             google.visualization.ChartTrendlineOptions |
             google.visualization.ScatterChartOptions |

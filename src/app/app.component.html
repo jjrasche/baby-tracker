@@ -1,28 +1,25 @@
 <mat-spinner *ngIf="loading"></mat-spinner>
 <ng-container *ngIf="!loading">
-  <select id="graphSelect" [(ngModel)]="selectedChart">
-    <option *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.title }} </option>
+  <select id="graphSelect" [(ngModel)]="selectedChart$">
+    <option *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.value.title }} </option>
   </select>
 
   <br>
-  <ng-container *ngIf="selectedChart as chart">
-    {{selectedChart.title}}
-    <ng-container *ngIf="selectedChart.data$ | async as data">
-      <google-chart
-        [type]="chart.type"
-        [columnNames]="chart.columns"
-        [data]="data"
-        [options]="chart.options"
-        (select)="chart.selectMethod($event)"
-        [height]="800"
-        [width]="1300">
-      </google-chart>
-    </ng-container>
+  <ng-container *ngIf="selectedChart$ | async as chart">
+    {{chart.title}}
+    <google-chart
+      [type]="chart.type"
+      [columnNames]="chart.columns"
+      [data]="chart.data"
+      [options]="chart.options"
+      (select)="chart.selectMethod($event)"
+      [height]="800"
+      [width]="1300">
+    </google-chart>
+    <div>
+      {{ JSON.stringify(selectedChart$.value.data) }}
+    </div>
   </ng-container>
 
   <br>
 </ng-container>
-
-<div>
-  {{ JSON.stringify(selectedChart.data$.value) }}
-</div>

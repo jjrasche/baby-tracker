@@ -25,10 +25,10 @@ export class AppComponent implements OnInit {
   public title: string;
   stackedChartOptions: google.visualization.ColumnChartOptions;
 
-  public charts: ChartData[];
-  public selectedChart: ChartData;
-  public selectedChart$: Observable<ChartData>;
-  public selectedEntries: Observable<Entry[]>;
+  public charts: BehaviorSubject<ChartData>[];
+  // public selectedChart: ChartData;
+  public selectedChart$: BehaviorSubject<ChartData>;
+  public selectedEntries$: Observable<Entry[]>;
   private num = 1;
   loading = true;
   // getNumObservable = () => interval(1000).pipe(map(() => {
@@ -91,20 +91,20 @@ export class AppComponent implements OnInit {
   }
 
   selectHandler(item: any) {
-    this.selectedChart.selectMethod(item);
+    this.selectedChart$.value.selectMethod(item);
   }
 
   initData() {
     this.charts = [
-      // this.chartDataService.createScatterChart(this.dataSetService.bedTimeStart(), this.dataSetService.morningWakeUptime()),
-      this.chartDataService.createWokeUpBedTimeChart(),
-      this.chartDataService.createWokeUpFirstNapStartChart(),
-      this.chartDataService.createSleepStackedChart("Theodore"),
-      this.chartDataService.createSleepStackedChart("Charlie"),
-      this.chartDataService.createActivityTimelienChart("Theodore"),
-      this.chartDataService.createActivityTimelienChart("Charlie"),
+      this.chartDataService.createScatterChart(this.dataSetService.bedTimeStart(), this.dataSetService.morningWakeUptime()),
+      // this.chartDataService.createWokeUpBedTimeChart(),
+      // this.chartDataService.createWokeUpFirstNapStartChart(),
+      // this.chartDataService.createSleepStackedChart("Theodore"),
+      // this.chartDataService.createSleepStackedChart("Charlie"),
+      // this.chartDataService.createActivityTimelienChart("Theodore"),
+      // this.chartDataService.createActivityTimelienChart("Charlie"),
     ];
-    this.selectedChart = this.charts[0];
+    this.selectedChart$ = this.charts[0];
     this.cdr.markForCheck();
   }
 }
