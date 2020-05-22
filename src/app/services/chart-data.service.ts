@@ -6,7 +6,7 @@ import { ChartData } from "@models/chart-data";
 import { TimelineService } from "./timeline.service";
 import { DataSetService } from "./data-set.service";
 import { getChildColor, getOpacity } from "@models/styel-method";
-import { defaultToolTipMethod } from "@models/tool-tip-method";
+import { defaultToolTipMethod, lineChartTimeOfDayToolTip, scatterChartTimeOfDayToolTip } from "@models/tool-tip-method";
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { ChartColumn } from "@models/chart-column";
 import { filter, map } from "rxjs/operators";
@@ -77,16 +77,22 @@ export class ChartDataService {
               { type: column1.dataType },
               { type: column2.dataType },
               { role: "style" },
-              // { role: "tooltip"}
+              { role: "tooltip"}
             ],
             options: {
               explorer: { actions: ["dragToZoom", "rightClickToReset"] },
-              vAxis: { title: column1.title },
-              hAxis: { title: column2.title },
-              trendlines: { 0: {} }
-              // tooltip: {isHtml: true},
+              hAxis: { title: column1.title },
+              vAxis: { title: column2.title },
+              tooltip: {isHtml: true},
+              trendlines: {
+                0: {
+                  type: "exponential",
+                  degree: 12,
+                  visibleInLegend: true,
+                }
+              }
             },
-            data: this.dataSetService.mergeDataSets(column1.data, column2.data, [getChildColor, getOpacity])
+            data: this.dataSetService.mergeDataSets(column1.data, column2.data, [getChildColor, getOpacity], scatterChartTimeOfDayToolTip)
           } as ChartData;
         })
     ).toBehaviorSubject();
@@ -102,7 +108,8 @@ export class ChartDataService {
             columns: [
               { type: "datetime" },
               { type: column.dataType },
-              { role: "style"}
+              { role: "style"},
+              { role: "tooltip"},
             ],
             options: {
               explorer: { actions: ["dragToPan", "rightClickToReset"] },
@@ -111,11 +118,13 @@ export class ChartDataService {
               trendlines: {
                 0: {
                   type: "polynomial",
-                  degree: 10,
+                  degree: 25,
                 }
-              }
+              },
+              tooltip: {isHtml: true},
             },
-            data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d)])
+            // data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d)])
+            data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d), lineChartTimeOfDayToolTip(d)])
           } as ChartData;
         })
     ).toBehaviorSubject();

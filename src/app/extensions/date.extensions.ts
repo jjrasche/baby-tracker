@@ -24,6 +24,7 @@ declare global {
     getTimeOfDayObject(): number[];
     getChartDateTime(): string;
     minutesSinceStartOfDay(): number;
+    minutesUntilEndOfDay(): number;
   }
 }
 
@@ -108,3 +109,10 @@ Date.prototype.minutesSinceStartOfDay = function(): number {
   const diff = moment(this).diff(moment(dayStart), "minutes");
   return Math.abs(diff);
 };
+
+Date.prototype.minutesUntilEndOfDay = function(): number {
+  const dayEnd = this.dateOnly().addDays(1);
+  const diff = moment(this).diff(moment(dayEnd), "minutes");
+  return Math.abs(diff);
+};
+

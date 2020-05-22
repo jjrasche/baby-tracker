@@ -39,7 +39,7 @@ string;
           arr.push(styleSetters.map(setter => setter(datumn1, matchingDatumn2, data1)).join("; "));
         }
         if (toolTipMethod) {
-          arr.push(defaultToolTipMethod(datumn1, matchingDatumn2));
+          arr.push(toolTipMethod(datumn1, matchingDatumn2));
         }
         ret.push(arr);
       }
@@ -60,7 +60,7 @@ string;
           const lastSleepOfNight = sleeps.filter(sleep => sleep.endTime.minutesSinceStartOfDay() < nightTimeEnd()).sort().last();
           if (lastSleepOfNight) {
             arr.push(new Datumn(
-              lastSleepOfNight.endDate.dateOnly(),
+              lastSleepOfNight.endDate,
               childName as Child,
               lastSleepOfNight.endTime.getTimeOfDayObject()
             ));
@@ -77,19 +77,21 @@ string;
     )).toBehaviorSubject();
   }
 
-  bedTimeStart(lookForPreviousDaysSleepStart: boolean = false): BehaviorSubject<ChartColumn> {
+  bedTimeStart(lookForPreviousDaysSleepStart: boolean = false, child?: Child): BehaviorSubject<ChartColumn> {
     return this.napService.sleep.pipe(
       map((sleepData: SleepEntry[]) => {
-        const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
+        const childSleepDataByDate = sleepData
+          .filter(d => !!child ? d.childName === child : true)
+          .groupByProperties(["startDate", "childName"]);
         const arr: Datumn[] = [];
         Object.keys(childSleepDataByDate).forEach(groupKey => {
-          const child = groupKey.split("-").last();
+          const childName = groupKey.split("-").last();
           const sleeps = childSleepDataByDate[groupKey];
-          const firstSleepOfNight = sleeps.filter(sleep => sleep.minutes > nightTimeStart()).sort().first();
+          const firstSleepOfNight = sleeps.filter(sleep => sleep.startTime.minutesSinceStartOfDay() > nightTimeStart()).sort().first();
           if (firstSleepOfNight) {
             arr.push(new Datumn(
               lookForPreviousDaysSleepStart ? firstSleepOfNight.entryDate : firstSleepOfNight.entryDate.addDays(1),
-              child as Child,
+              childName as Child,
               firstSleepOfNight.startTime.getTimeOfDayObject()
             ));
           }
