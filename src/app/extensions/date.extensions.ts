@@ -22,6 +22,8 @@ declare global {
     convertToChartDateStringTime(): string;
     compareDate(date: Date): number;
     getTimeOfDayObject(): number[];
+    getChartDateTime(): string;
+    minutesSinceStartOfDay(): number;
   }
 }
 
@@ -95,4 +97,14 @@ Date.prototype.compareDate = function(d: Date): number {
 
 Date.prototype.getTimeOfDayObject = function(): number[] {
   return [this.getHours(), this.getMinutes(), this.getSeconds()];
+};
+
+Date.prototype.getChartDateTime = function(): string {
+  return moment(this).format("ddd MMM D");
+};
+
+Date.prototype.minutesSinceStartOfDay = function(): number {
+  const dayStart = this.dateOnly();
+  const diff = moment(this).diff(moment(dayStart), "minutes");
+  return Math.abs(diff);
 };

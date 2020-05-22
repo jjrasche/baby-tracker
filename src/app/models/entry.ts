@@ -1,4 +1,4 @@
-import { SleepEntry } from "./sleep";
+import * as moment from "moment";
 
 export type Child = "Charlie" | "Theodore";
 
@@ -59,9 +59,5 @@ export class Entry {
 
   get minutes(): number {
     return (this.startTime.getHours() * 60) + this.startTime.getMinutes();
-  }
-
-  get spansMultipleDays(): number {
-    return;
   }
 }

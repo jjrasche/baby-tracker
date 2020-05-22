@@ -42,9 +42,8 @@ export class TimelineService {
             .filter((entry: Entry) => entry.childName === childName)
             // .filter((entry: Entry) => entry.entryDate.sameDate(new Date("2020-01-01")))
             .forEach((entry: Entry, idx: number, arr: Entry[]) => {
-              const str = moment(entry.entryDate).format("ddd MMM D");
               chartData.push([
-                str,
+                entry.entryDate.getChartDateTime(),
                 this.timelineActivityLabel(entry),
                 ...entry.getNormalizedStartEndTimes(date)
                 // entry.startTime,

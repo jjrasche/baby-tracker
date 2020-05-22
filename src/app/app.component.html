@@ -17,9 +17,16 @@
       [width]="1300">
     </google-chart>
     <div>
-      {{ JSON.stringify(selectedChart$.value.data) }}
+      <!-- {{ JSON.stringify(chart.data) }} -->
     </div>
   </ng-container>
 
   <br>
 </ng-container>
+<div *ngIf="napService.sleep | async as sleep">
+  {{ JSON.stringify(sleep)}}
+</div>
+<hr>
+<div *ngIf="dataSetService.morningWakeUptime() | async as data">
+  {{ JSON.stringify(data)}}
+</div>

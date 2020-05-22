@@ -4,7 +4,7 @@ export const MinutesInHour = 60;
 export const fullCycle = 42;
 export type SleepType = "nap" | "sleep";
 export const nightTimeStart = (): number => 18 * MinutesInHour;
-export const nightTimeEnd = (): number => 6 * MinutesInHour;
+export const nightTimeEnd = (): number => 7 * MinutesInHour;
 
 export class SleepEntry extends Entry {
   sleepType: SleepType;

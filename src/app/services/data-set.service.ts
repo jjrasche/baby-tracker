@@ -28,7 +28,6 @@ string;
     return 0;
   }
 
-  // TODO: should make this a combinelatest
   mergeDataSets(data1: Datumn[], data2: Datumn[], styleSetters: StyleMethod[] = null, toolTipMethod: ToolTipMethod = null): any[][] {
     const ret: any[][] = [];
     // match each unique child, time combo into a 2 x n array
@@ -48,21 +47,25 @@ string;
     return ret;
   }
 
-  morningWakeUptime(): BehaviorSubject<ChartColumn> {
+  morningWakeUptime(child?: Child): BehaviorSubject<ChartColumn> {
     return this.napService.sleep.pipe(
       map((sleepData: SleepEntry[]) => {
         const arr: Datumn[] = [];
-        const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
+        const childSleepDataByDate = sleepData
+          .filter(d => !!child ? d.childName === child : true)
+          .groupByProperties(["endDate", "childName"]);
         Object.keys(childSleepDataByDate).forEach(groupKey => {
-          const child = groupKey.split("-").last();
+          const childName = groupKey.split("-").last();
           const sleeps = childSleepDataByDate[groupKey];
-          const lastSleepOfNight = sleeps.filter(sleep => sleep.minutes < nightTimeEnd()).sort().last();
+          const lastSleepOfNight = sleeps.filter(sleep => sleep.endTime.minutesSinceStartOfDay() < nightTimeEnd()).sort().last();
           if (lastSleepOfNight) {
             arr.push(new Datumn(
               lastSleepOfNight.endDate.dateOnly(),
-              child as Child,
+              childName as Child,
               lastSleepOfNight.endTime.getTimeOfDayObject()
             ));
+          } else {
+            console.log(groupKey);
           }
         });
         return {

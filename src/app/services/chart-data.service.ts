@@ -68,26 +68,54 @@ export class ChartDataService {
     return combineLatest([col1, col2]).pipe(
         filter(data => data[0] != null && data[1] != null),
         map((data) => {
-          const ret: any[][] = [];
-          const data1 = data[0].data;
-          const data2 = data[1].data;
+          const column1 = data[0];
+          const column2 = data[1];
           return {
             type: "ScatterChart",
-            title: ` ${col1.value.title} vs. ${col2.value.title}`,
+            title: ` ${column1.title} vs. ${column2.title}`,
             columns: [
-              { type: col1.value.dataType },
-              { type: col2.value.dataType },
+              { type: column1.dataType },
+              { type: column2.dataType },
               { role: "style" },
               // { role: "tooltip"}
             ],
             options: {
               explorer: { actions: ["dragToZoom", "rightClickToReset"] },
-              vAxis: { title: col1.value.title },
-              hAxis: { title: col2.value.title },
+              vAxis: { title: column1.title },
+              hAxis: { title: column2.title },
               trendlines: { 0: {} }
               // tooltip: {isHtml: true},
             },
-            data: this.dataSetService.mergeDataSets(data1, data2, [getChildColor, getOpacity])
+            data: this.dataSetService.mergeDataSets(column1.data, column2.data, [getChildColor, getOpacity])
+          } as ChartData;
+        })
+    ).toBehaviorSubject();
+  }
+
+  createLineChart(col: BehaviorSubject<ChartColumn>): BehaviorSubject<ChartData> {
+    return col.pipe(
+        filter(column => column != null),
+        map((column: ChartColumn) => {
+          return {
+            type: "LineChart",
+            title: ` ${column.title}`,
+            columns: [
+              { type: "datetime" },
+              { type: column.dataType },
+              { role: "style"}
+            ],
+            options: {
+              explorer: { actions: ["dragToPan", "rightClickToReset"] },
+              // explorer: { actions: ["dragToZoom", "rightClickToReset"] },
+              hAxis: { title: column.title },
+              trendlines: {
+                0: {
+                  type: "polynomial",
+                  degree: 10,
+                }
+              }
+            },
+            data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d)])
           } as ChartData;
         })
     ).toBehaviorSubject();

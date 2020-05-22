@@ -43,14 +43,14 @@ export class AppComponent implements OnInit {
 
   constructor(
     private entryService: EntryService,
-    private napService: NapService,
+    public napService: NapService,
     private timeLineService: TimelineService,
     parserService: CsvParserService,
     fileReader: LocalFileReader,
     private cdr: ChangeDetectorRef,
     public chartsLoaderService: ScriptLoaderService,
     private chartDataService: ChartDataService,
-    private dataSetService: DataSetService
+    public dataSetService: DataSetService
     ) {
       // google.load("visualization", "1.0", {packages: ["table"]});
       // google.setOnLoadCallback(this.initData.bind(this));
@@ -96,6 +96,8 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
+      this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Charlie")),
+      this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Theodore")),
       this.chartDataService.createScatterChart(this.dataSetService.bedTimeStart(), this.dataSetService.morningWakeUptime()),
       // this.chartDataService.createWokeUpBedTimeChart(),
       // this.chartDataService.createWokeUpFirstNapStartChart(),
