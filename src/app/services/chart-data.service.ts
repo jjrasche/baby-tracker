@@ -6,7 +6,7 @@ import { ChartData } from "@models/chart-data";
 import { TimelineService } from "./timeline.service";
 import { DataSetService } from "./data-set.service";
 import { getChildColor, getOpacity } from "@models/styel-method";
-import { defaultToolTipMethod, lineChartTimeOfDayToolTip, scatterChartTimeOfDayToolTip } from "@models/tool-tip-method";
+import { defaultToolTipMethod, lineChartTimeOfDayToolTip, scatterChartTimeOfDayToolTip, lineChartNumberToolTip } from "@models/tool-tip-method";
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { ChartColumn } from "@models/chart-column";
 import { filter, map } from "rxjs/operators";
@@ -124,7 +124,8 @@ export class ChartDataService {
               tooltip: {isHtml: true},
             },
             // data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d)])
-            data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d), lineChartTimeOfDayToolTip(d)])
+            data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d),
+              column.dataType === "timeofday" ?  lineChartTimeOfDayToolTip(d) : lineChartNumberToolTip(d)])
           } as ChartData;
         })
     ).toBehaviorSubject();

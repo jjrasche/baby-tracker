@@ -6,11 +6,7 @@ import { napsPerDayColumns } from "../column-configs";
 import { EntryService } from "./entry.service";
 import { Entry, Child } from "@models/entry";
 import { countAggregateFunction, sumPropertyAggregateFunction, SortDirection } from "../extensions/array.extensions";
-
-export interface SumByDate {
-  sum: number;
-  entryDate: Date;
-}
+import { SumByDate } from "@models/sum-by-date";
 
 @Injectable({providedIn: "root"})
 export class NapService {

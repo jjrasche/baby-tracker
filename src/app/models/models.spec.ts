@@ -14,7 +14,7 @@ fdescribe("models test", () => {
     expect(actual.sleepType).toEqual("nap");
   });
 
-  fit("nap type set properly", () => {
+  it("nap type set properly", () => {
     const actual = new SleepEntry({startTime: new Date("2020-03-25 15:57:00.000")} as Entry);
 
     // const actual = new SleepEntry(a); // ,"endTime":"2020-03-25 16:29:00.000","activity":"Sleep","duration":31,"quantity":null,"extraData":null,"text":"Theodore slept (31m)","notes":null,"caregiver":"Jim","childName":"Theodore","sleepType":"nap","fullCycle":false}`));
@@ -44,5 +44,12 @@ fdescribe("models test", () => {
     const entry = new Entry({startTime, endTime} as Entry);
     const actual = entry.getNormalizedStartEndTimes(entryDate);
     expect(actual).toEqual([new Date(`"1999-12-31 20:05:00.000`), new Date(`${defaultBaseDateString} 05:10.000`)]);
+  });
+
+  fit("diaper pee amount set properly", () => {
+    const actual = new SleepEntry({startTime: new Date("2020-03-25 15:57:00.000")} as Entry);
+
+    // const actual = new SleepEntry(a); // ,"endTime":"2020-03-25 16:29:00.000","activity":"Sleep","duration":31,"quantity":null,"extraData":null,"text":"Theodore slept (31m)","notes":null,"caregiver":"Jim","childName":"Theodore","sleepType":"nap","fullCycle":false}`));
+    expect(actual.sleepType).toEqual("nap");
   });
 });

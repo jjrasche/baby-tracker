@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Child } from "@models/entry";
+import { Child, Entry } from "@models/entry";
 import { NapService } from "./nap.service";
 import { BehaviorSubject, Observable, of, combineLatest } from "rxjs";
 import { Datumn } from "@models/datumn";
@@ -8,12 +8,17 @@ import { map, filter } from "rxjs/operators";
 import { StyleMethod } from "@models/styel-method";
 import { ToolTipMethod, defaultToolTipMethod } from "@models/tool-tip-method";
 import { ChartColumn, dataType } from "@models/chart-column";
+import { DiaperService } from "./diaper.service";
+import { DiaperEntry, DiaperType } from "@models/diaper";
+import { SumByDate } from "@models/sum-by-date";
+import { SumCounByChildDate } from "@models/sum-count-by-child-date";
 
 @Injectable({providedIn: "root"})
 export class DataSetService {
 
   constructor(
     private napService: NapService,
+    private diaperService: DiaperService
   ) {}
 
 
@@ -104,4 +109,31 @@ string;
       }
     )).toBehaviorSubject();
   }
+
+  urineAmount(child?: Child): BehaviorSubject<ChartColumn> {
+    return this.diaperService.getDiaperAmountByChildByDate("pee", child).pipe(
+      map((aggData: SumCounByChildDate[]) => {
+        const data = aggData.map(ad => new Datumn(ad.entryDate, ad.childName, ad.sum));
+        return {
+          title: "Urine Daily Amount",
+          dataType: "number" as dataType,
+          data
+        };
+      }
+    )).toBehaviorSubject();
+  }
+
+  pooAmount(child?: Child): BehaviorSubject<ChartColumn> {
+    return this.diaperService.getDiaperAmountByChildByDate("poo", child).pipe(
+      map((aggData: SumCounByChildDate[]) => {
+        const data = aggData.map(ad => new Datumn(ad.entryDate, ad.childName, ad.sum));
+        return {
+          title: "Poo Daily Amount",
+          dataType: "number" as dataType,
+          data
+        };
+      }
+    )).toBehaviorSubject();
+  }
+
 }
