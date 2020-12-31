@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href /dist/BabyMonitor/ --deploy-url /dist/BabyMonitor/",
+    "build": "ng build --base-href /baby-tracker/dist/BabyMonitor/ --deploy-url /baby-tracker/dist/BabyMonitor/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
