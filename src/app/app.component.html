@@ -3,23 +3,25 @@
   <select id="graphSelect" [(ngModel)]="selectedChart$">
     <option *ngFor="let chart of charts" [ngValue]="chart"> {{ chart.value.title }} </option>
   </select>
-
   <br>
   <ng-container *ngIf="selectedChart$ | async as chart">
     {{chart.title}}
-    <google-chart
-      [type]="chart.type"
-      [columnNames]="chart.columns"
-      [data]="chart.data"
-      [options]="chart.options"
-      (select)="chart.selectMethod($event)"
-      [height]="800"
-      [width]="1300">
-    </google-chart>
-    <div>
-      {{ JSON.stringify(chart.data) }}
+    <!-- <div [ngSwitch]="chart.type"> -->
+    <div [ngSwitch]="chart.type" style="width:100%;height:100%">
+      <bm-word-cloud *ngSwitchCase="ChartType.WordCloud" [options]="chart.options"></bm-word-cloud>
+      <ng-container *ngSwitchDefault>
+        <google-chart
+          [type]="chart.type"
+          [columnNames]="chart.columns"
+          [data]="chart.data"
+          [options]="chart.options"
+          (select)="chart.selectMethod($event)"
+          [dynamicResize]="true"
+          style="width:100%;height:100%">
+        </google-chart>
+      </ng-container>
     </div>
+    <div>{{ JSON.stringify(chart.data) }}</div>
   </ng-container>
-
   <br>
 </ng-container>

@@ -11,6 +11,7 @@ import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { ChartColumn } from "@models/chart-column";
 import { filter, map } from "rxjs/operators";
 import { Datumn } from "@models/datumn";
+import { ChartType } from "@models/chart-type";
 
 @Injectable({providedIn: "root"})
 export class ChartDataService {
@@ -126,6 +127,19 @@ export class ChartDataService {
             // data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d)])
             data: column.data.map(d => [d.time.dateOnly(), d.data, getChildColor(d),
               column.dataType === "timeofday" ?  lineChartTimeOfDayToolTip(d) : lineChartNumberToolTip(d)])
+          } as ChartData;
+        })
+    ).toBehaviorSubject();
+  }
+
+  createWordCloud(options: BehaviorSubject<WordCloud.Options>): BehaviorSubject<ChartData> {
+    return options.pipe(
+        filter(opt => opt != null),
+        map((opt: WordCloud.Options) => {
+          return {
+            type: ChartType.WordCloud,
+            title: "description word cloud",
+            options: opt
           } as ChartData;
         })
     ).toBehaviorSubject();

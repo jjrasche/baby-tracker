@@ -1,17 +1,14 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, OnInit} from "@angular/core";
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from "@angular/core";
 import { EntryService } from "./services/entry.service";
 import { CsvParserService } from "./services/csv-parser.service";
 import { LocalFileReader } from "./services/local-file-reader.service";
 import { Entry } from "@models/entry";
-import { Observable, of, BehaviorSubject, timer, interval } from "rxjs";
-import { ScriptLoaderService, RawChartComponent } from "angular-google-charts";
+import { BehaviorSubject } from "rxjs";
 import { NapService } from "./services/nap.service";
-import { SleepEntry } from "@models/sleep";
-import { mergeMap, map, tap } from "rxjs/operators";
-import { TimelineService } from "./services/timeline.service";
 import { ChartData } from "@models/chart-data";
 import { ChartDataService } from "./services/chart-data.service";
 import { DataSetService } from "./services/data-set.service";
+import { ChartType } from "@models/chart-type";
 
 @Component({
   selector: "bm-root",
@@ -19,36 +16,21 @@ import { DataSetService } from "./services/data-set.service";
   styleUrls: ["./app.component.css"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements OnInit {
-  JSON = JSON;
-  @ViewChild(RawChartComponent) chartElement: RawChartComponent;
-  public title: string;
-  stackedChartOptions: google.visualization.ColumnChartOptions;
-
+export class AppComponent {
   public charts: BehaviorSubject<ChartData>[];
-  // public selectedChart: ChartData;
   public selectedChart$: BehaviorSubject<ChartData>;
-  public selectedEntries$: Observable<Entry[]>;
-  private num = 1;
   loading = true;
-  // getNumObservable = () => interval(1000).pipe(map(() => {
-  //   const ret: any[][] = [];
-  //   const internal = [this.num++];
-  //   ret.push(internal);
-  //   return ret;
-  // })).toBehaviorSubject("lsdjf")
-  // num$ = interval(1000).pipe(map(() => [[this.num++]])).toBehaviorSubject("lsdjf");
-  // num$ = interval(1000).toBehaviorSubject("lsdjf");
-  getTypeof = (thing: any) => typeof thing;
+  height = "100%";
+  width = "100%";
+  JSON = JSON;
+  ChartType = ChartType;
 
   constructor(
     private entryService: EntryService,
     public napService: NapService,
-    private timeLineService: TimelineService,
     parserService: CsvParserService,
     fileReader: LocalFileReader,
     private cdr: ChangeDetectorRef,
-    public chartsLoaderService: ScriptLoaderService,
     private chartDataService: ChartDataService,
     public dataSetService: DataSetService
     ) {
@@ -59,35 +41,12 @@ export class AppComponent implements OnInit {
         console.log("file read");
         const data: Entry[] = parserService.ParseData(csvString);
         console.log("parsed");
-        entryService.addEntries(data);
+        this.entryService.addEntries(data);
         this.loading = false;
         cdr.markForCheck();
         console.log("entries added");
       });
       this.initData();
-  }
-
-  ngOnInit() {
-    this.stackedChartOptions = {
-      isStacked: true,
-      explorer: {
-        actions: ["dragToPan"],
-        axis: "horizontal",
-      },
-      hAxis: {
-        viewWindow: {
-          min: new Date(2020, 3, 18),
-          max: new Date(2020, 4, 18)
-        },
-      },
-      vAxis: {
-        title: "minutes",
-        viewWindow: {
-          min: 0,
-          max: 1100
-        },
-      },
-    };
   }
 
   selectHandler(item: any) {
@@ -96,16 +55,17 @@ export class AppComponent implements OnInit {
 
   initData() {
     this.charts = [
+      this.chartDataService.createWordCloud(this.dataSetService.descriptionWordFrequency("Theodore")),
       this.chartDataService.createLineChart(this.dataSetService.urineAmount("Charlie")),
-      this.chartDataService.createLineChart(this.dataSetService.pooAmount("Charlie")),
-      this.chartDataService.createScatterChart(
-        this.dataSetService.morningWakeUptime("Charlie"),
-        this.dataSetService.bedTimeStart(true, "Charlie")),
-      this.chartDataService.createScatterChart(
-        this.dataSetService.morningWakeUptime("Theodore"),
-        this.dataSetService.bedTimeStart(true, "Theodore")),
-      this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Charlie")),
-      this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Theodore")),
+      // this.chartDataService.createLineChart(this.dataSetService.pooAmount("Charlie")),
+      // this.chartDataService.createScatterChart(
+      //   this.dataSetService.morningWakeUptime("Charlie"),
+      //   this.dataSetService.bedTimeStart(true, "Charlie")),
+      // this.chartDataService.createScatterChart(
+      //   this.dataSetService.morningWakeUptime("Theodore"),
+      //   this.dataSetService.bedTimeStart(true, "Theodore")),
+      // this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Charlie")),
+      // this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Theodore")),
       // this.chartDataService.createWokeUpBedTimeChart(),
       // this.chartDataService.createWokeUpFirstNapStartChart(),
       // this.chartDataService.createSleepStackedChart("Theodore"),

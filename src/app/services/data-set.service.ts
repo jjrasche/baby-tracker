@@ -136,4 +136,8 @@ string;
     )).toBehaviorSubject();
   }
 
+  descriptionWordFrequency(child?: Child): BehaviorSubject<WordCloud.Options> {
+    let opt = {list: [['me', 25], ['you', 108], ['him', 18]]} as WordCloud.Options;
+    return new BehaviorSubject(opt);
+  }
 }

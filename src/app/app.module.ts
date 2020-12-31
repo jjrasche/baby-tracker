@@ -13,10 +13,12 @@ import "./extensions/string.extensions";
 import "./extensions/array.extensions";
 import "./extensions/date.extensions";
 import "./extensions/obesrvable.extensions";
+import { WordCloudComponent } from './word-cloud/word-cloud.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    WordCloudComponent
   ],
   imports: [
     BrowserModule,
