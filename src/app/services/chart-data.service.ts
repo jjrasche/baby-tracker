@@ -145,33 +145,33 @@ export class ChartDataService {
     ).toBehaviorSubject();
   }
 
-  createWokeUpBedTimeChart(): ChartData {
-    return {
-      type: "ScatterChart",
-      title: `time woke up vs. time went to bed`, // *
-      columns: [
-        // { type: "timeofday", id: "endTime", label: "End Time" }, // *
-        // { type: "timeofday", id: "startTime", label: "Start Time" },
-        // { role: "style" },
-        { type: "timeofday" }, // *
-        { type: "timeofday"},
-        { role: "style" },
-        // { role: "tooltip"}
-      ],
-      options: {
-        explorer: { actions: ["dragToZoom", "rightClickToReset"] },
-        vAxis: { title: "Start Bed Time" }, // *
-        hAxis: { title: "Sleep Wake Up Time" },
-        trendlines: { 0: {} }
-        // tooltip: {isHtml: true},
-      },
-      data$: this.dataSetService.mergeDataSets(
-        this.dataSetService.morningWakeUptime(), // *
-        this.dataSetService.bedTimeStart(),
-        [getChildColor, getOpacity],
-        )
-    };
-  }
+  // createWokeUpBedTimeChart(): ChartData {
+  //   return {
+  //     type: "ScatterChart",
+  //     title: `time woke up vs. time went to bed`, // *
+  //     columns: [
+  //       // { type: "timeofday", id: "endTime", label: "End Time" }, // *
+  //       // { type: "timeofday", id: "startTime", label: "Start Time" },
+  //       // { role: "style" },
+  //       { type: "timeofday" }, // *
+  //       { type: "timeofday"},
+  //       { role: "style" },
+  //       // { role: "tooltip"}
+  //     ],
+  //     options: {
+  //       explorer: { actions: ["dragToZoom", "rightClickToReset"] },
+  //       vAxis: { title: "Start Bed Time" }, // *
+  //       hAxis: { title: "Sleep Wake Up Time" },
+  //       trendlines: { 0: {} }
+  //       // tooltip: {isHtml: true},
+  //     },
+  //     data$: this.dataSetService.mergeDataSets(
+  //       this.dataSetService.morningWakeUptime(), // *
+  //       this.dataSetService.bedTimeStart(),
+  //       [getChildColor, getOpacity],
+  //       )
+  //   };
+  // }
 
   // createWokeUpFirstNapStartChart(): ChartData {
   //   return {
