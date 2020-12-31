@@ -38,15 +38,13 @@ export class AppComponent {
       // google.setOnLoadCallback(this.initData.bind(this));
       // chartsLoaderService.onReady.pipe(take(1)).subscribe(() => (this.initData()));
       fileReader.readFile("assets/data/baby-data.csv").subscribe((csvString: string) => {
-        console.log("file read");
         const data: Entry[] = parserService.ParseData(csvString);
-        console.log("parsed");
         this.entryService.addEntries(data);
         this.loading = false;
         cdr.markForCheck();
-        console.log("entries added");
       });
       this.initData();
+      this.selectedChart$.subscribe(() => cdr.markForCheck());
   }
 
   selectHandler(item: any) {
@@ -55,17 +53,19 @@ export class AppComponent {
 
   initData() {
     this.charts = [
-      this.chartDataService.createWordCloud(this.dataSetService.descriptionWordFrequency("Theodore")),
+      this.chartDataService.createWordCloud("Diary Word Cloud", this.dataSetService.diaryWordFrequency()),
+      this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Charlie")),
+      this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Theodore")),
+      this.chartDataService.createWordCloud("All Entered Text Word Cloud", this.dataSetService.descriptionsPlusDiaryWordFrequency()),
+      this.chartDataService.createWordCloud("Non-Diary Word Cloud", this.dataSetService.nonDiaryWordFrequency()),
       this.chartDataService.createLineChart(this.dataSetService.urineAmount("Charlie")),
-      // this.chartDataService.createLineChart(this.dataSetService.pooAmount("Charlie")),
-      // this.chartDataService.createScatterChart(
-      //   this.dataSetService.morningWakeUptime("Charlie"),
-      //   this.dataSetService.bedTimeStart(true, "Charlie")),
-      // this.chartDataService.createScatterChart(
-      //   this.dataSetService.morningWakeUptime("Theodore"),
-      //   this.dataSetService.bedTimeStart(true, "Theodore")),
-      // this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Charlie")),
-      // this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Theodore")),
+      this.chartDataService.createLineChart(this.dataSetService.pooAmount("Charlie")),
+      this.chartDataService.createScatterChart(
+        this.dataSetService.morningWakeUptime("Charlie"),
+        this.dataSetService.bedTimeStart(true, "Charlie")),
+      this.chartDataService.createScatterChart(
+        this.dataSetService.morningWakeUptime("Theodore"),
+        this.dataSetService.bedTimeStart(true, "Theodore")),
       // this.chartDataService.createWokeUpBedTimeChart(),
       // this.chartDataService.createWokeUpFirstNapStartChart(),
       // this.chartDataService.createSleepStackedChart("Theodore"),

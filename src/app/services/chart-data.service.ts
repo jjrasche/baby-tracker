@@ -132,13 +132,13 @@ export class ChartDataService {
     ).toBehaviorSubject();
   }
 
-  createWordCloud(options: BehaviorSubject<WordCloud.Options>): BehaviorSubject<ChartData> {
+  createWordCloud(title: string, options: BehaviorSubject<WordCloud.Options>): BehaviorSubject<ChartData> {
     return options.pipe(
         filter(opt => opt != null),
         map((opt: WordCloud.Options) => {
           return {
             type: ChartType.WordCloud,
-            title: "description word cloud",
+            title,
             options: opt
           } as ChartData;
         })

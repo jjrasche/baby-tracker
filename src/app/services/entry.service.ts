@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { filter, map } from "rxjs/operators";
 import { SleepEntry } from "@models/sleep";
 import { Entry } from "@models/entry";
 import { napsPerDayColumns } from "../column-configs";
@@ -60,5 +60,16 @@ export class EntryService {
         dataTable: [columns, ...data],
         options: {title},
       };
+  }
+
+  get nonEmptyNonDiaryNotes(): Observable<string[]> {
+    return this.entries.pipe(
+      map(entries => {
+        const ret = entries
+          .filter(e => e.activity !== "Diary" && e.notes != null && e.notes != "")
+          .map(e => e.notes)
+        return ret;
+      })
+    );
   }
 }

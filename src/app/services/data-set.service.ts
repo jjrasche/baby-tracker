@@ -12,13 +12,17 @@ import { DiaperService } from "./diaper.service";
 import { DiaperEntry, DiaperType } from "@models/diaper";
 import { SumByDate } from "@models/sum-by-date";
 import { SumCounByChildDate } from "@models/sum-count-by-child-date";
+import { EntryService } from "./entry.service";
+import { DiaryService } from "./diary.service";
 
 @Injectable({providedIn: "root"})
 export class DataSetService {
 
   constructor(
+    private entryService: EntryService,
     private napService: NapService,
-    private diaperService: DiaperService
+    private diaperService: DiaperService,
+    private diaryService: DiaryService
   ) {}
 
 
@@ -136,8 +140,48 @@ string;
     )).toBehaviorSubject();
   }
 
-  descriptionWordFrequency(child?: Child): BehaviorSubject<WordCloud.Options> {
-    let opt = {list: [['me', 25], ['you', 108], ['him', 18]]} as WordCloud.Options;
-    return new BehaviorSubject(opt);
+  descriptionsPlusDiaryWordFrequency(): BehaviorSubject<WordCloud.Options> {
+    return combineLatest([
+      this.entryService.nonEmptyNonDiaryNotes,
+      this.diaryService.allText
+    ]).pipe(
+      filter(val => val[0].length > 0 && val[1].length > 0),
+      map(val => this.createWordCloudOptions(val[0].concat(val[1]))),
+    ).toBehaviorSubject();
+  }
+
+  diaryWordFrequency(): BehaviorSubject<WordCloud.Options> {
+    return this.diaryService.allText.pipe(
+      map(text => this.createWordCloudOptions(text)),
+    ).toBehaviorSubject();
+  }
+
+  nonDiaryWordFrequency(): BehaviorSubject<WordCloud.Options> {
+    return this.entryService.nonEmptyNonDiaryNotes.pipe(
+      map(text => this.createWordCloudOptions(text)),
+    ).toBehaviorSubject();
+  }
+
+  createWordCloudOptions(listOfWords: string[]): WordCloud.Options {
+    const omittedWords = ["and","to","the","a","with","in","of","up","","i","for","on","her","it","was","she","he","at","out","null","but","his","him","down","when","put","is","that","after","1","me","time","this","from","be","not","then","get","or","so","them","my","would","as","very","just","had","about","little","you","2","3","5"];
+    const words = listOfWords
+      .map(text => text.toLowerCase().replace(/[^a-z0-9é'°#\s]/g, "").split(" "))
+      .flat()
+      .filter(word => !omittedWords.includes(word) && !word.isNumeric());
+    const wordCount = words.reduce((acc, w) => {
+      if (!!acc[w]) { acc[w]++ }
+      else { acc[w] = 1 }
+      return acc;
+    }, {})
+    const list = Object.keys(wordCount)
+      .map(word => [word, wordCount[word]])
+      .sort((a, b) => b[1] - a[1]);
+    return {
+      list,
+      shuffle: false,
+      minSize: 1,
+      weightFactor: .75,
+      // shrinkToFit: true
+    };
   }
 }
