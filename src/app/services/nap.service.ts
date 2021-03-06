@@ -10,11 +10,12 @@ import { SumByDate } from "@models/sum-by-date";
 
 @Injectable({providedIn: "root"})
 export class NapService {
+  all$: BehaviorSubject<SleepEntry[]>
+  sleep$: BehaviorSubject<SleepEntry[]>
+  naps$: BehaviorSubject<SleepEntry[]>
 
-  constructor(private entryService: EntryService) {}
-
-  get all(): BehaviorSubject<SleepEntry[]> {
-    return this.entryService.entries.pipe(
+  constructor(private entryService: EntryService) {
+    this.all$ = this.entryService.entries.pipe(
       filter(d => d.length > 0),
       map((entries: Entry[]) => {
         return entries
@@ -22,39 +23,37 @@ export class NapService {
           .filter(e => e.activity == "Sleep")
           .map(entry => new SleepEntry(entry));
       })
-    ) as BehaviorSubject<SleepEntry[]>;
-  }
-
-  get sleep(): Observable<SleepEntry[]> {
-    return this.all.pipe(
-        map(e => {
-            const ret = e.filter(s => s.sleepType === "sleep")
-            .sortByProperty("startTime", SortDirection.Ascending);
-            return ret;
-        })
-    );
-  }
-
-  get naps(): Observable<SleepEntry[]> {
-    return this.all.pipe(map(e => e.filter(s => s.sleepType === "nap")));
+    ).toBehaviorSubject();
+    this.sleep$ = this.all$.pipe(
+      filter(d => !!d),
+      map(e => {
+          const ret = e.filter(s => s.sleepType === "sleep")
+          .sortByProperty("startTime", SortDirection.Ascending);
+          return ret;
+      })
+    ).toBehaviorSubject()
+    this.naps$ = this.all$.pipe(
+      filter(d => !!d),
+      map(e => e.filter(s => s.sleepType === "nap"))
+    ).toBehaviorSubject();
   }
 
   napEntriesByDate(date: Date): BehaviorSubject<SleepEntry[]> {
-    return this.all.pipe(
+    return this.all$.pipe(
       map((sleepEntries: SleepEntry[]) => sleepEntries.filter(s => s.sleepType === "nap" && s.entryDate.sameDate(date)))
     ) as BehaviorSubject<SleepEntry[]>;
   }
 
   getNapsPerDay = (): Observable<any[]> => {
-    return this.naps.pipe(map(naps => {
+    return this.naps$.pipe(map(naps => {
       const ret = naps.selectGroupByAndAggregate(["entryDate"], [countAggregateFunction]);
       return ret;
     }));
   }
   getNapsPerDayByChild = (): Observable<any[]> =>
-    this.naps.pipe(map(naps => naps.selectGroupByAndAggregate(["entryDate", "childName"], [countAggregateFunction])))
+    this.naps$.pipe(map(naps => naps.selectGroupByAndAggregate(["entryDate", "childName"], [countAggregateFunction])))
 
-  getSleepEventDurationByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.all.pipe(
+  getSleepEventDurationByChildByDate = (sleepType: SleepType, child: Child): Observable<SumByDate[]> => this.all$.pipe(
     map(sleepEntries => {
       console.log(`getSleepEventsByChildByDate ${sleepType}     ${child}`);
       // tslint:disable-next-line:triple-equals
@@ -107,7 +106,7 @@ export class NapService {
 
   // [<wake time>, <sleep time>]
   wokeUpVsBedTimeData(): BehaviorSubject<any[][]> {
-    return this.sleep.pipe(
+    return this.sleep$.pipe(
       map((sleepData: SleepEntry[]) => {
         const childSleepDataByDate = sleepData.groupByProperties(["entryDate", "childName"]);
         const arr = [];
@@ -126,7 +125,7 @@ export class NapService {
 
   // [<wake time>, <first nap next day>]
   wokeUpVsFirstNapStartData(): BehaviorSubject<any[][]> {
-    return this.all.pipe(
+    return this.all$.pipe(
       filter(d => d.length > 0),
       map((sleepData: SleepEntry[]) => {
         const dateRange = sleepData.map(sd => sd.startTime).getDateRange();

@@ -56,8 +56,9 @@ string;
     return ret;
   }
 
-  morningWakeUptime(child?: Child): BehaviorSubject<ChartColumn> {
-    return this.napService.sleep.pipe(
+  morningWakeUptimeData(child?: Child): Observable<Datumn[]> {
+    return this.napService.sleep$.pipe(
+      filter(d => !!d),
       map((sleepData: SleepEntry[]) => {
         const arr: Datumn[] = [];
         const childSleepDataByDate = sleepData
@@ -69,7 +70,7 @@ string;
           const lastSleepOfNight = sleeps.filter(sleep => sleep.endTime.minutesSinceStartOfDay() < nightTimeEnd()).sort().last();
           if (lastSleepOfNight) {
             arr.push(new Datumn(
-              lastSleepOfNight.endDate,
+              lastSleepOfNight.endTime,
               childName as Child,
               lastSleepOfNight.endTime.getTimeOfDayObject()
             ));
@@ -77,17 +78,22 @@ string;
             console.log(groupKey);
           }
         });
-        return {
-          title: "Morning WakeUp",
-          dataType: "timeofday" as dataType,
-          data: arr.sort(this.sortDataSet)
-        };
+        return arr.sort(this.sortDataSet)
       }
-    )).toBehaviorSubject();
+    ));
   }
 
-  bedTimeStart(lookForPreviousDaysSleepStart: boolean = false, child?: Child): BehaviorSubject<ChartColumn> {
-    return this.napService.sleep.pipe(
+  morningWakeUptime(child?: Child): BehaviorSubject<ChartColumn> {
+    return this.morningWakeUptimeData(child).pipe(
+      filter(d => !!d),
+      map((data: Datumn[]) => ({ title: `Morning WakeUp - ${child}`, dataType: "timeofday" as dataType, data })
+    )).toBehaviorSubject();
+
+  }
+
+  bedTimeStartData(child?: Child): Observable<Datumn[]> {
+    return this.napService.sleep$.pipe(
+      filter(d => !!d),
       map((sleepData: SleepEntry[]) => {
         const childSleepDataByDate = sleepData
           .filter(d => !!child ? d.childName === child : true)
@@ -99,17 +105,42 @@ string;
           const firstSleepOfNight = sleeps.filter(sleep => sleep.startTime.minutesSinceStartOfDay() > nightTimeStart()).sort().first();
           if (firstSleepOfNight) {
             arr.push(new Datumn(
-              lookForPreviousDaysSleepStart ? firstSleepOfNight.entryDate : firstSleepOfNight.entryDate.addDays(1),
+              firstSleepOfNight.startTime,
               childName as Child,
               firstSleepOfNight.startTime.getTimeOfDayObject()
             ));
           }
         });
+        return arr.sort(this.sortDataSet);
+      }
+    ));
+  }
+
+  bedTimeStart(child?: Child): BehaviorSubject<ChartColumn> {
+    return this.bedTimeStartData(child).pipe(
+      filter(d => !!d),
+      map((data: Datumn[]) => ({ title: `Start Night Sleep - ${child}`, dataType: "timeofday" as dataType, data })
+    )).toBehaviorSubject();
+  }
+
+  nightTimeSleepDuration(child?: Child): BehaviorSubject<ChartColumn> {
+    return combineLatest([this.bedTimeStartData(child), this.morningWakeUptimeData(child)]).pipe(
+      filter(d => !!d[0] && !!d[1]),
+      map((d: [Datumn[], Datumn[]]) => {
+        const arr = d[0].map(start => {
+          var end = d[1].find(end => start.time.addDays(1).dateOnly().getTime() === end.time.dateOnly().getTime())
+          if (!!end) {
+            var duration = (end.time.getTime() - start.time.getTime())/(1000 * 60 * 60);
+            return new Datumn(start.time, start.child as Child, duration);
+          }
+          return null;
+        });
         return {
-          title: "Start Night Sleep",
-          dataType: "timeofday" as dataType,
-          data: arr.sort(this.sortDataSet)
+          title: `Night Sleep Duration - ${child}`,
+          dataType: "number" as dataType,
+          data: arr.filter(d => !!d).sort(this.sortDataSet)
         };
+        return null;
       }
     )).toBehaviorSubject();
   }
@@ -119,7 +150,7 @@ string;
       map((aggData: SumCounByChildDate[]) => {
         const data = aggData.map(ad => new Datumn(ad.entryDate, ad.childName, ad.sum));
         return {
-          title: "Urine Daily Amount",
+          title: `Urine Daily Amount - ${child}`,
           dataType: "number" as dataType,
           data
         };
@@ -132,7 +163,7 @@ string;
       map((aggData: SumCounByChildDate[]) => {
         const data = aggData.map(ad => new Datumn(ad.entryDate, ad.childName, ad.sum));
         return {
-          title: "Poo Daily Amount",
+          title: `Poo Daily Amount - ${child}`,
           dataType: "number" as dataType,
           data
         };

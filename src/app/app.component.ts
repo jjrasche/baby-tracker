@@ -53,19 +53,21 @@ export class AppComponent {
 
   initData() {
     this.charts = [
-      this.chartDataService.createWordCloud("Diary Word Cloud", this.dataSetService.diaryWordFrequency()),
+      this.chartDataService.createLineChart(this.dataSetService.nightTimeSleepDuration("Charlie")),
+      this.chartDataService.createLineChart(this.dataSetService.nightTimeSleepDuration("Theodore")),
+      this.chartDataService.createScatterChart(
+        this.dataSetService.morningWakeUptime("Charlie"),
+        this.dataSetService.bedTimeStart("Charlie")),
+      this.chartDataService.createScatterChart(
+        this.dataSetService.morningWakeUptime("Theodore"),
+        this.dataSetService.bedTimeStart("Theodore")),
       this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Charlie")),
       this.chartDataService.createLineChart(this.dataSetService.morningWakeUptime("Theodore")),
+      this.chartDataService.createWordCloud("Diary Word Cloud", this.dataSetService.diaryWordFrequency()),
       this.chartDataService.createWordCloud("All Entered Text Word Cloud", this.dataSetService.descriptionsPlusDiaryWordFrequency()),
       this.chartDataService.createWordCloud("Non-Diary Word Cloud", this.dataSetService.nonDiaryWordFrequency()),
       this.chartDataService.createLineChart(this.dataSetService.urineAmount("Charlie")),
-      this.chartDataService.createLineChart(this.dataSetService.pooAmount("Charlie")),
-      this.chartDataService.createScatterChart(
-        this.dataSetService.morningWakeUptime("Charlie"),
-        this.dataSetService.bedTimeStart(true, "Charlie")),
-      this.chartDataService.createScatterChart(
-        this.dataSetService.morningWakeUptime("Theodore"),
-        this.dataSetService.bedTimeStart(true, "Theodore")),
+      this.chartDataService.createLineChart(this.dataSetService.pooAmount("Charlie"))
       // this.chartDataService.createWokeUpBedTimeChart(),
       // this.chartDataService.createWokeUpFirstNapStartChart(),
       // this.chartDataService.createSleepStackedChart("Theodore"),

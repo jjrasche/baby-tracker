@@ -115,4 +115,3 @@ Date.prototype.minutesUntilEndOfDay = function(): number {
   const diff = moment(this).diff(moment(dayEnd), "minutes");
   return Math.abs(diff);
 };
-
